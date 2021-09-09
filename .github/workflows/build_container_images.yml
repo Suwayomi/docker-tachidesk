@@ -1,0 +1,496 @@
+name: Build Container Images
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+     inputs:
+        tachidesk_release_type:
+          required: false
+          default: 'stable'
+          description: 'Tachidesk Release Type'
+        publish_images_manually:
+          required: false
+          default: 'no'
+          description: 'Force Publish Images Manually'
+
+env:
+  build_repo_docker: 'tachidesk'
+  build_base_image_alpine: 'alpine:3.13'
+  build_base_image_alpine_platform: 'linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x'
+  build_base_image_alpine_platform_testing: 'linux/amd64'
+  startup_script_url: 'https://raw.githubusercontent.com/${{ github.repository }}/main/scripts/startup_script.sh'
+  tachidesk_webui_stable_url: 'https://api.github.com/repos/suwayomi/Tachidesk-Server/releases/latest'
+  tachidesk_webui_preview_url: 'https://api.github.com/repos/suwayomi/Tachidesk-Server-preview/releases/latest'
+  
+jobs:
+  check_workflow:
+    runs-on: ubuntu-latest
+    outputs:
+      enable_discord_hook: ${{ steps.run_job_steps.outputs.enable_discord_hook }}
+      enable_build_publish: ${{ steps.run_job_steps.outputs.enable_discord_hook }}
+      run_check_stable: ${{ steps.run_job_steps.outputs.run_check_stable }}
+      run_check_preview: ${{ steps.run_job_steps.outputs.run_check_preview }}
+      run_build_stable: ${{ steps.run_job_steps.outputs.run_build_stable }}
+      run_build_preview: ${{ steps.run_job_steps.outputs.run_build_preview }}
+
+    if: "!startsWith(github.event.head_commit.message, '[SKIP CI]')"
+    steps:         
+      - name: run job and steps check
+        id: run_job_steps
+        run: |
+            if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then           
+                if [[ "${{ github.event.inputs.tachidesk_release_type }}" == "stable" ]]; then 
+                    if [[ "${{ github.actor }}"  == "AriaMoradi" ]]; then         
+                        echo "::set-output name=run_check_stable::true"
+                        echo "::set-output name=run_build_stable::true"   
+                        echo "::set-output name=enable_build_publish::true"
+                        echo "::set-output name=enable_discord_hook::true"
+                    elif [[ "${{ github.actor }}"  == "arbuilder" && "${{ github.repository_owner }}" == "arbuilder" ]]; then
+                        echo "::set-output name=run_check_stable::true"
+                        echo "::set-output name=run_build_stable::true"   
+                        echo "::set-output name=enable_build_publish::true"
+                        echo "::set-output name=enable_discord_hook::true"
+                    elif [[ "${{ github.actor }}"  == "arbuilder" && "${{ github.repository_owner }}" == "Suwayomi" && "${{ github.event.inputs.publish_images_manually }}" == "yes"  ]]; then
+                        echo "::set-output name=run_check_stable::true"
+                        echo "::set-output name=run_build_stable::true"   
+                        echo "::set-output name=enable_build_publish::true"
+                        echo "::set-output name=enable_discord_hook::true"
+                    elif [[ "${{ github.actor }}"  == "arbuilder" && "${{ github.repository_owner }}" == "Suwayomi" && "${{ github.event.inputs.publish_images_manually }}" == "no" ]]; then
+                        echo "::set-output name=run_check_stable::true"
+                        echo "::set-output name=run_build_stable::true"   
+                        echo "::set-output name=enable_build_publish::false"
+                        echo "::set-output name=enable_discord_hook::false"
+                    elif [[ "${{ github.actor }}"  != "arbuilder" && "${{ github.event.inputs.publish_images_manually }}" == "yes" ]]; then
+                        echo "::set-output name=run_check_stable::true"
+                        echo "::set-output name=run_build_stable::true"   
+                        echo "::set-output name=enable_build_publish::true"
+                        echo "::set-output name=enable_discord_hook::false"
+                    else
+                        echo "::set-output name=run_check_stable::false"
+                        echo "::set-output name=run_build_stable::false"   
+                        echo "::set-output name=enable_build_publish::false"
+                        echo "::set-output name=enable_discord_hook::false"
+                    fi
+                fi
+                if [[ "${{ github.event.inputs.tachidesk_release_type }}" == "preview" ]]; then
+                    if [[ "${{ github.actor }}"  == "AriaMoradi" ]]; then         
+                        echo "::set-output name=run_check_preview::true"
+                        echo "::set-output name=run_build_preview::true"   
+                        echo "::set-output name=enable_build_publish::true"
+                        echo "::set-output name=enable_discord_hook::true"
+                    elif [[ "${{ github.actor }}"  == "arbuilder" && "${{ github.repository_owner }}" == "arbuilder" ]]; then
+                        echo "::set-output name=run_check_preview::true"
+                        echo "::set-output name=run_build_preview::true"   
+                        echo "::set-output name=enable_build_publish::true"
+                        echo "::set-output name=enable_discord_hook::true"
+                    elif [[ "${{ github.actor }}"  == "arbuilder" && "${{ github.repository_owner }}" == "Suwayomi" && "${{ github.event.inputs.publish_images_manually }}" == "yes" ]]; then
+                        echo "::set-output name=run_check_preview::true"
+                        echo "::set-output name=run_build_preview::true"   
+                        echo "::set-output name=enable_build_publish::true"
+                        echo "::set-output name=enable_discord_hook::true"
+                    elif [[ "${{ github.actor }}"  == "arbuilder" && "${{ github.repository_owner }}" == "Suwayomi" && "${{ github.event.inputs.publish_images_manually }}" == "no" ]]; then
+                        echo "::set-output name=run_check_preview::true"
+                        echo "::set-output name=run_build_preview::true"   
+                        echo "::set-output name=enable_build_publish::false"
+                        echo "::set-output name=enable_discord_hook::false"
+                    elif [[ "${{ github.actor }}"  != "arbuilder" && "${{ github.event.inputs.publish_images_manually }}" == "yes" ]]; then
+                        echo "::set-output name=run_check_preview::true"
+                        echo "::set-output name=run_build_preview::true"   
+                        echo "::set-output name=enable_build_publish::true"
+                        echo "::set-output name=enable_discord_hook::false"
+                    else
+                        echo "::set-output name=run_check_preview::false"
+                        echo "::set-output name=run_build_preview::false"   
+                        echo "::set-output name=enable_build_publish::false"
+                        echo "::set-output name=enable_discord_hook::false"
+                    fi
+                fi
+            elif [[ "${{ github.event_name }}" == "pull_request" || "${{ github.event_name }}" == "push" ]]; then
+                echo "::set-output name=run_check_stable::true"
+                echo "::set-output name=run_build_stable::false"                 
+                echo "::set-output name=run_check_preview::false"                
+                echo "::set-output name=run_build_preview::false"
+                echo "::set-output name=enable_build_publish::false"
+                echo "::set-output name=enable_discord_hook::false"
+            else
+                echo "::set-output name=run_check_stable::false"
+                echo "::set-output name=run_build_stable::false" 
+                echo "::set-output name=run_check_preview::false"
+                echo "::set-output name=run_build_preview::false"   
+                echo "::set-output name=enable_build_publish::false"
+                echo "::set-output name=enable_discord_hook::false"
+            fi
+            
+  check_stable:
+    needs: check_workflow
+    runs-on: ubuntu-latest
+    outputs:
+      new_release_check: ${{ steps.release_version_check.outputs.new_release_check }}
+      release_url: ${{ steps.get_latest_release_metadata.outputs.release_url }}
+      release_commit: ${{ steps.get_latest_release_metadata.outputs.release_commit }}
+      release_tag: ${{ steps.get_latest_release_metadata.outputs.release_tag }}      
+      release_filename: ${{ steps.get_latest_release_metadata.outputs.release_filename }}
+      release_version: ${{ steps.get_latest_release_metadata.outputs.release_version }}
+      release_var: ${{ steps.get_latest_release_metadata.outputs.release_var }}
+      tachidesk_docker_git_commit: ${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
+      build_date: ${{ steps.get_latest_release_metadata.outputs.build_date }}
+      repository_owner_lower: ${{ steps.get_latest_release_metadata.outputs.repository_owner_lower }}
+      run_build_stable : ${{ needs.check_workflow.outputs.run_build_stable }}
+      enable_discord_hook: ${{ needs.check_workflow.outputs.enable_discord_hook }}
+      enable_build_publish: ${{ needs.check_workflow.outputs.enable_build_publish }}
+      
+    if: needs.check_workflow.outputs.run_check_stable == 'true'
+    steps:         
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: main
+          path: main
+          fetch-depth: 0
+          
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: get latest release metadata
+        id: get_latest_release_metadata
+        run: |
+          cd main
+          release_url=$(curl -s ${{ env.tachidesk_webui_stable_url }} | egrep -o "https://.*./releases/download.*.Tachidesk-Server.*.jar")          
+          release_tag=$(curl -s ${{ env.tachidesk_webui_stable_url }} | egrep -o "tag_name.*.v[0-9]+.[0-9]+.[0-9]+" | egrep -o "v[0-9]+.[0-9]+.[0-9]+")
+          release_var=$(echo $release_url | egrep -o "Tachidesk-Server-$release_tag-r[0-9]+.jar" | egrep -o "$release_tag-r[0-9]+")
+          release_commit=$(echo $release_var | cut -f2 -d"r")
+          release_filename=Tachidesk-Server-${release_var}.jar
+          release_version=$(echo $release_tag | cut -c2-)
+          echo "::set-output name=release_url::$release_url"
+          echo "::set-output name=release_commit::$release_commit"
+          echo "::set-output name=release_tag::$release_tag"
+          echo "::set-output name=release_filename::$release_filename"
+          echo "::set-output name=release_version::$release_version"
+          echo "::set-output name=release_var::$release_var"
+          tachidesk_docker_git_commit=$(git rev-list --count HEAD)
+          echo "::set-output name=tachidesk_docker_git_commit::$tachidesk_docker_git_commit"
+          build_date=$(date "+%F")
+          echo "::set-output name=build_date::$build_date"
+          echo "::set-output name=repository_owner_lower::$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')"
+          
+      - name: Build and save stable alpine
+        id: docker_build_release_alpine
+        uses: docker/build-push-action@v2
+        with:
+          file: scripts/dockerfiles/Git_Actions-Dockerfile
+          platforms: ${{ env.build_base_image_alpine_platform_testing }}
+          build-args: |
+            BASE_IMAGE=${{ env.build_base_image_alpine }}
+            BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
+            IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
+            IMAGE_TYPE=stable-alpine
+            TACHIDESK_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.release_commit }}
+            TACHIDESK_RELEASE_TAG=${{ steps.get_latest_release_metadata.outputs.release_tag }}
+            TACHIDESK_RELEASE_DOWNLOAD_URL=${{ steps.get_latest_release_metadata.outputs.release_url }}
+            TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
+            STARTUP_SCRIPT_URL=${{  env.startup_script_url }}
+            TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
+          tags: |
+            test-image:stable
+          outputs: type=docker,dest=/tmp/test_image_stable.tar
+
+      - name: Docker Run Test Stable Image
+        id: docker_run_test_image_stable
+        run: |
+            docker load --input /tmp/test_image_stable.tar
+            mkdir -p /home/runner/work/_temp/tachidesk
+            chmod -R 777 /home/runner/work/_temp/tachidesk
+            docker run --rm -d -p 127.0.0.1:4568:4567 -v /home/runner/work/_temp/tachidesk:/home/suwayomi/.local/share/Tachidesk --name=test_image_stable test-image:stable
+            sleep 15
+            cat /home/runner/work/_temp/tachidesk/logfile.log
+            curl -s 127.0.0.1:4568/api/v1/settings/about/ && val=$(curl -s 127.0.0.1:4568/api/v1/settings/about/ | grep -o "Tachidesk" | sort --unique)
+            if [[ $val == "Tachidesk" ]]; then
+                echo ""
+                echo "Tachidesk stable run successfully"
+                echo "::set-output name=value::true"
+                docker stop test_image_stable
+            else
+                echo ""
+                echo "Tachidesk stable run Failed"
+                echo "::set-output name=value::false"
+                if [[ ${{ needs.check_workflow.outputs.enable_discord_hook }} == 'true' ]]; then
+                    curl \
+                      -F 'payload_json={"username": "Github", "content": "Docker Stable Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
+                      -F "file1=@/home/runner/work/_temp/tachidesk/logfile.log" \
+                      "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
+                fi
+                exit 1
+            fi
+      
+      - name: Delete docker files
+        run: |
+          rm -f /tmp/test_image_stable.tar
+          #rm -rf /home/runner/work/_temp/tachidesk
+          
+
+  build_stable:
+    needs: check_stable
+    runs-on: ubuntu-latest
+
+    if: needs.check_stable.outputs.run_build_stable == 'true' 
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: main
+          path: main
+          fetch-depth: 0
+          
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1 
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Build and push stable alpine
+        id: docker_build_release_alpine
+        uses: docker/build-push-action@v2
+        with:
+          file: scripts/dockerfiles/Git_Actions-Dockerfile
+          platforms: ${{ env.build_base_image_alpine_platform }}
+          push: ${{ needs.check_stable.outputs.enable_build_publish == 'true' }}
+          build-args: |
+            BASE_IMAGE=${{ env.build_base_image_alpine }}
+            BUILD_DATE=${{ needs.check_stable.outputs.build_date }}
+            IMAGE_VERSION=${{ needs.check_stable.outputs.release_version }}
+            IMAGE_TYPE=stable-alpine
+            TACHIDESK_GIT_COMMIT=${{ needs.check_stable.outputs.release_commit }}
+            TACHIDESK_RELEASE_TAG=${{ needs.check_stable.outputs.release_tag }}
+            TACHIDESK_RELEASE_DOWNLOAD_URL=${{ needs.check_stable.outputs.release_url }}
+            TACHIDESK_FILENAME=${{ needs.check_stable.outputs.release_filename }}
+            STARTUP_SCRIPT_URL=${{  env.startup_script_url }}
+            TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_stable.outputs.tachidesk_docker_git_commit }}
+            IMAGE_OWNER=${{ needs.check_stable.outputs.repository_owner_lower }}
+          tags: |
+            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:latest
+            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:${{ needs.check_stable.outputs.release_tag }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: save stable release
+        run: |
+          cd main
+          git pull
+          echo "`jq '.stable="${{ needs.check_stable.outputs.release_tag }}"' scripts/tachidesk_version.json`" > scripts/tachidesk_version.json
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git status
+          if [ -n "$(git status --porcelain)" ]; then
+              git pull
+              git add .
+              git commit -m "Update stable release version"
+              git push
+          else
+              echo "No changes to commit"
+          fi
+
+      - name: discord webhook stable
+        if: ${{ needs.check_stable.outputs.enable_discord_hook == 'true' }}
+        id: discord_webhook_stable
+        run: | 
+          curl -H "Content-Type: application/json" -d '{"content": "Docker Stable Image Published!","embeds":[{"color":16729344,"author":{"name":"${{ github.repository_owner }}","icon_url":"https://avatars.githubusercontent.com/u/81182076","url":"https://github.com/${{ github.repository_owner }}"},"title":"Docker Stable Release","url":"https://github.com/${{ github.repository_owner }}/docker-tachidesk","fields":[{"name":"docker update","value":"docker pull ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/tachidesk","inline":false},{"name":"docker run","value":"docker run -p 4567:4567 ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/tachidesk","inline":false}],"thumbnail":{"url": "https://www.docker.com/sites/default/files/d8/2019-07/vertical-logo-monochromatic.png"},"description":"Tachidesk version - ${{ needs.check_stable.outputs.release_tag }}"}]}' "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
+
+  check_preview:
+    needs: check_workflow 
+    runs-on: ubuntu-latest
+    outputs:
+      new_release_check: ${{ steps.release_version_check.outputs.new_release_check }}
+      release_url: ${{ steps.get_latest_release_metadata.outputs.release_url }}
+      release_commit: ${{ steps.get_latest_release_metadata.outputs.release_commit }}
+      release_tag: ${{ steps.get_latest_release_metadata.outputs.release_tag }}
+      release_filename: ${{ steps.get_latest_release_metadata.outputs.release_filename }}
+      release_version: ${{ steps.get_latest_release_metadata.outputs.release_version }}
+      release_var: ${{ steps.get_latest_release_metadata.outputs.release_var }}
+      tachidesk_docker_git_commit: ${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
+      build_date: ${{ steps.get_latest_release_metadata.outputs.build_date }}
+      repository_owner_lower: ${{ steps.get_latest_release_metadata.outputs.repository_owner_lower }}
+      run_build_preview : ${{ needs.check_workflow.outputs.run_build_preview }}
+      enable_discord_hook: ${{ needs.check_workflow.outputs.enable_discord_hook }}
+      enable_build_publish: ${{ needs.check_workflow.outputs.enable_build_publish }}
+      
+    if: needs.check_workflow.outputs.run_check_preview == 'true'  
+    steps:         
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: main
+          path: main
+          fetch-depth: 0
+          
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: get latest release metadata
+        id: get_latest_release_metadata
+        run: |
+          cd main
+          release_url=$(curl -s ${{ env.tachidesk_webui_preview_url }} | egrep -o "https://.*./releases/download.*.Tachidesk-Server.*.jar")
+          release_tag=$(curl -s ${{ env.tachidesk_webui_preview_url }} | egrep -o "tag_name.*.v[0-9]+.[0-9]+.[0-9]+-r[0-9]+" | egrep -o "v[0-9]+.[0-9]+.[0-9]+-r[0-9]+")
+          release_var=$(echo $release_url | grep -o "Tachidesk-Server-$release_tag.jar" | grep -o "$release_tag" )
+          release_commit=$(echo $release_var | cut -f2 -d"r")
+          release_filename=Tachidesk-Server-${release_var}.jar
+          release_version=$(echo $release_tag | cut -c2-)
+          echo "::set-output name=release_url::$release_url"
+          echo "::set-output name=release_commit::$release_commit"
+          echo "::set-output name=release_tag::$release_tag"
+          echo "::set-output name=release_filename::$release_filename"
+          echo "::set-output name=release_version::$release_version"
+          echo "::set-output name=release_var::$release_var"
+          tachidesk_docker_git_commit=$(git rev-list --count HEAD)
+          echo "::set-output name=tachidesk_docker_git_commit::$tachidesk_docker_git_commit"
+          build_date=$(date "+%F")
+          echo "::set-output name=build_date::$build_date"
+          echo "::set-output name=repository_owner_lower::$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')"          
+          
+      - name: Build and save preview alpine
+        id: docker_build_release_alpine
+        uses: docker/build-push-action@v2
+        with:
+          file: scripts/dockerfiles/Git_Actions-Dockerfile
+          platforms: ${{ env.build_base_image_alpine_platform_testing }}
+          build-args: |
+            BASE_IMAGE=${{ env.build_base_image_alpine }}
+            BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
+            IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
+            IMAGE_TYPE=preview-alpine
+            TACHIDESK_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.release_commit }}
+            TACHIDESK_RELEASE_TAG=${{ steps.get_latest_release_metadata.outputs.release_tag }}
+            TACHIDESK_RELEASE_DOWNLOAD_URL=${{ steps.get_latest_release_metadata.outputs.release_url }}
+            TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
+            STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
+            TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
+          tags: |
+            test-image:preview
+          outputs: type=docker,dest=/tmp/test_image_preview.tar
+          
+      - name: Docker Run Test Preview Image
+        id: docker_run_test_image_preview
+        run: |
+            docker load --input /tmp/test_image_preview.tar
+            mkdir -p /home/runner/work/_temp/tachidesk
+            chmod -R 777 /home/runner/work/_temp/tachidesk
+            docker run --rm -d -p 127.0.0.1:4569:4567 -v /home/runner/work/_temp/tachidesk:/home/suwayomi/.local/share/Tachidesk  --name=test_image_preview test-image:preview
+            sleep 15
+            cat /home/runner/work/_temp/tachidesk/logfile.log
+            curl -s 127.0.0.1:4569/api/v1/settings/about/ && val=$(curl -s 127.0.0.1:4569/api/v1/settings/about/ | grep -o "Tachidesk" | sort --unique)
+            if [[ $val == "Tachidesk" ]]; then
+                echo ""
+                echo "Tachidesk preview run successfully"
+                echo "::set-output name=value::true"
+                docker stop test_image_preview
+                run_check="true"
+            else
+                echo ""
+                echo "Tachidesk preview run Failed"
+                echo "::set-output name=value::false"
+                if [[ ${{ needs.check_workflow.outputs.enable_discord_hook }} == 'true' ]]; then                
+                    curl \
+                      -F 'payload_json={"username": "Github", "content": "Docker Preview Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
+                      -F "file1=@/home/runner/work/_temp/tachidesk/logfile.log" \
+                      "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
+                fi
+                exit 1
+            fi            
+            docker system prune -a -f --volumes
+            
+      - name: Delete docker files
+        run: |
+          rm -f /tmp/test_image_preview.tar
+          #rm -rf /home/runner/work/_temp/tachidesk
+
+  build_preview:
+    needs: check_preview
+    runs-on: ubuntu-latest
+
+    if: needs.check_preview.outputs.run_build_preview == 'true'
+    steps:   
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: main
+          path: main
+          fetch-depth: 0
+          
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1 
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Build and push preview alpine
+        id: docker_build_release_alpine
+        uses: docker/build-push-action@v2
+        with:
+          file: scripts/dockerfiles/Git_Actions-Dockerfile
+          platforms: ${{ env.build_base_image_alpine_platform }}
+          push: ${{ needs.check_preview.outputs.enable_build_publish == 'true' }}
+          build-args: |
+            BASE_IMAGE=${{ env.build_base_image_alpine }}
+            BUILD_DATE=${{ needs.check_preview.outputs.build_date }}
+            IMAGE_VERSION=${{ needs.check_preview.outputs.release_version }}
+            IMAGE_TYPE=preview-alpine
+            TACHIDESK_GIT_COMMIT=${{ needs.check_preview.outputs.release_commit }}
+            TACHIDESK_RELEASE_TAG=${{ needs.check_preview.outputs.release_tag }}
+            TACHIDESK_RELEASE_DOWNLOAD_URL=${{ needs.check_preview.outputs.release_url }}
+            TACHIDESK_FILENAME=${{ needs.check_preview.outputs.release_filename }}
+            STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
+            TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_preview.outputs.tachidesk_docker_git_commit }}
+            IMAGE_OWNER=${{ needs.check_preview.outputs.repository_owner_lower }}            
+          tags: |
+            ghcr.io/${{ needs.check_preview.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:preview
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: save preview release
+        run: |
+          cd main
+          git pull
+          echo "`jq '.preview="${{ needs.check_preview.outputs.release_tag }}"' scripts/tachidesk_version.json`" > scripts/tachidesk_version.json
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git status
+          if [ -n "$(git status --porcelain)" ]; then
+              git pull
+              git add .
+              git commit -m "Update current preview version"
+              git push
+          else
+              echo "No changes to commit"
+          fi
+
+      - name: discord webhook preview
+        if: ${{ needs.check_preview.outputs.enable_discord_hook == 'true' }}
+        id: discord_webhook_preview
+        run: |
+          curl -H "Content-Type: application/json" -d '{"content": "Docker Preview Image Published!","embeds":[{"color":16729344,"author":{"name":"${{ github.repository_owner }}","icon_url":"https://avatars.githubusercontent.com/u/81182076","url":"https://github.com/${{ github.repository_owner }}"},"title":"Docker Preview Release","url":"https://github.com/${{ github.repository_owner }}/docker-tachidesk","fields":[{"name":"docker update","value":"docker pull ghcr.io/${{ needs.check_preview.outputs.repository_owner_lower }}/tachidesk:preview","inline":false},{"name":"docker run","value":"docker run -p 4567:4567 ghcr.io/${{ needs.check_preview.outputs.repository_owner_lower }}/tachidesk:preview","inline":false}],"thumbnail":{"url": "https://www.docker.com/sites/default/files/d8/2019-07/vertical-logo-monochromatic.png"},"description":"Tachidesk version - ${{ needs.check_preview.outputs.release_tag }}"}]}' "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
