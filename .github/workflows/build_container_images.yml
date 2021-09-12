@@ -408,7 +408,7 @@ jobs:
                 echo "::set-output name=value::false"
                 if [[ ${{ needs.check_workflow.outputs.enable_discord_hook }} == 'true' ]]; then                
                     curl \
-                      -F 'payload_json={"username": "Github", "content": "Docker Preview Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
+                      -F 'payload_json={"username": "Github", "content": "<@255018340244914177>\n<@785012853178499073>\nDocker Preview Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
                       -F "file1=@/home/runner/work/_temp/tachidesk/logfile.log" \
                       "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
                 fi
