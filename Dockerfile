@@ -12,7 +12,7 @@ WORKDIR /home/suwayomi
 
 RUN curl -s --create-dirs -L https://raw.githubusercontent.com/suwayomi/docker-tachidesk/main/scripts/startup_script.sh -o /home/suwayomi/startup/startup_script.sh
 
-RUN curl -L $(curl -s https://api.github.com/repos/suwayomi/tachidesk/releases/latest | grep -o "https.*jar") -o /home/suwayomi/startup/tachidesk_latest.jar
+RUN curl -L $(curl -s https://api.github.com/repos/suwayomi/tachidesk-server/releases/latest | grep -o "https.*jar") -o /home/suwayomi/startup/tachidesk_latest.jar
 
 EXPOSE 4567
 
