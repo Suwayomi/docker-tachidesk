@@ -45,6 +45,25 @@ Persistent data of tachidesk on subsequent run
 For Specific Tachidesk stable version (from v0.3.9 onwards)
 
      docker run -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:v0.3.9
+     
+ # docker-compose
+ ```
+---
+version: "2.3"
+services:
+  tachidesk:
+    image: ghcr.io/suwayomi/tachidesk 
+    container_name: tachidesk
+    environment:
+      - UID=1000 #(Set to userid you want)
+      - GID=1000 #(Set to guid you want)
+      - TZ=Europe/London #(Can be set to any timezone)
+    volumes:
+      - <path/to/folder>:/./home/suwayomi/.local/share/Tachidesk
+    ports:
+      - 4567:4567 # Port used by Tachidesk
+    restart: unless-stopped
+ ```
 
 # Credit
 
