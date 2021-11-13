@@ -16,7 +16,10 @@ Docker images are mutli-arch (linux/386, linux/amd64, linux/arm/v6, linux/arm/v7
 
 Log file location - /home/suwayomi/.local/share/Tachidesk/logfile.log
 
-# docker Commands
+# Docker compose
+Use the template compose.yml in this repo for creating and starting tachidesk docker container.  
+
+# Docker commands
 
 Expose to localhost ip
 
