@@ -34,7 +34,14 @@ LABEL maintainer="suwayomi" \
       org.opencontainers.image.licenses="MPL-2.0"
 
 RUN mkdir -p /home/suwayomi && chown -R suwayomi:suwayomi /home/suwayomi
-USER suwayomi
+RUN USER=suwayomi && \
+    GROUP=suwayomi && \
+    curl -SsL https://github.com/boxboat/fixuid/releases/download/v0.5.1/fixuid-0.5.1-linux-amd64.tar.gz | tar -C /usr/local/bin -xzf - && \
+    chown root:root /usr/local/bin/fixuid && \
+    chmod 4755 /usr/local/bin/fixuid && \
+    mkdir -p /etc/fixuid && \
+    printf "user: $USER\ngroup: $GROUP\n" > /etc/fixuid/config.yml
+USER suwayomi:suwayomi
 WORKDIR /home/suwayomi
 RUN echo $TACHIDESK_FILENAME
 RUN curl -s --create-dirs -L $TACHIDESK_RELEASE_DOWNLOAD_URL -o /home/suwayomi/startup/tachidesk_latest.jar
