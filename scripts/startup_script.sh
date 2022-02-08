@@ -1,5 +1,4 @@
 #!/bin/sh
-eval $( fixuid );
 if [ ! -f /home/suwayomi/.local/share/Tachidesk/docker_touchfile ]; then
 	touch /home/suwayomi/.local/share/Tachidesk/docker_touchfile
 	curl -s --create-dirs -L https://raw.githubusercontent.com/Suwayomi/docker-tachidesk/main/server.conf -o /home/suwayomi/.local/share/Tachidesk/server.conf;
