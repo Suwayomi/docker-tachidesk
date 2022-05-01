@@ -18,7 +18,7 @@ services:
     ports:
       - "4567:4567"
     restart: on-failure:3
-	
+    
    custom_network1:
      driver: bridge
      ipam:
