@@ -1,15 +1,28 @@
 ---
-version: "2.1"
+version: '3.7'
+
 services:
-  tachidesk:
+
+  tachidesk-docker:
     image: ghcr.io/suwayomi/tachidesk
-    container_name: tachidesk
+    container_name: tachidesk-docker
+    networks:
+      custom_network1:
+        ipv4_address: 172.22.2.11
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=< change it to your timezone > # Use TZ database name from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     volumes:
-      - </path/to/folder>/tachidesk:/home/suwayomi/.local/share/Tachidesk
+      - /<path to folder>/docker-config/tachidesk:/home/suwayomi/.local/share/Tachidesk # edit <path to folder> to your mapped folder
     ports:
-      - 4567:4567
-    restart: unless-stopped
+      - "4567:4567"
+    restart: on-failure:3
+	
+   custom_network1:
+     driver: bridge
+     ipam:
+       driver: default
+       config:
+         - subnet: 172.22.2.0/24
+           gateway: 172.22.2.1  
