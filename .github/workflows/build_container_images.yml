@@ -181,7 +181,7 @@ jobs:
           
       - name: Build and save stable alpine
         id: docker_build_release_alpine
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
           platforms: ${{ env.build_base_image_alpine_platform_testing }}
@@ -263,7 +263,7 @@ jobs:
           
       - name: Build and push stable alpine
         id: docker_build_release_alpine
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
           platforms: ${{ env.build_base_image_alpine_platform }}
@@ -367,7 +367,7 @@ jobs:
           
       - name: Build and save preview alpine
         id: docker_build_release_alpine
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
           platforms: ${{ env.build_base_image_alpine_platform_testing }}
@@ -450,7 +450,7 @@ jobs:
   
       - name: Build and push preview alpine
         id: docker_build_release_alpine
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
           platforms: ${{ env.build_base_image_alpine_platform }}
