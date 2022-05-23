@@ -18,11 +18,12 @@ services:
     ports:
       - "4567:4567"
     restart: on-failure:3
-    
-   custom_network1:
-     driver: bridge
-     ipam:
-       driver: default
-       config:
-         - subnet: 172.22.2.0/24
-           gateway: 172.22.2.1  
+
+networks:    
+  custom_network1:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.2.0/24
+          gateway: 172.22.2.1
