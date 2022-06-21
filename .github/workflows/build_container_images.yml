@@ -292,7 +292,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Build and push stable alpine java11
-        id: docker_build_release_alpine
+        id: docker_build_release_alpine_java11
         uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
@@ -505,7 +505,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Build and push preview alpine java11
-        id: docker_build_release_alpine
+        id: docker_build_release_alpine_java11
         uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
