@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN apk --update add curl openjdk11-jre tzdata
+RUN apk --update add curl openjdk11-jre-headless tzdata
 
 RUN addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi
 
