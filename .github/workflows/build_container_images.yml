@@ -17,7 +17,7 @@ on:
 
 env:
   build_repo_docker: 'tachidesk'
-  build_base_image_alpine: 'alpine:3.15'
+  build_base_image_alpine: 'alpine:3.16'
   build_base_image_alpine_platform: 'linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x'
   build_base_image_alpine_platform_java11: 'linux/amd64,linux/arm64/v8,linux/ppc64le,linux/s390x'
   build_base_image_alpine_platform_testing: 'linux/amd64'
