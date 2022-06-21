@@ -231,6 +231,56 @@ jobs:
                 fi
                 exit 1
             fi
+
+      - name: Build and save stable alpine java11
+        id: docker_build_release_alpine_java11
+        uses: docker/build-push-action@v3
+        with:
+          file: scripts/dockerfiles/Git_Actions-Dockerfile
+          platforms: ${{ env.build_base_image_alpine_platform_testing }}
+          build-args: |
+            BASE_IMAGE=${{ env.build_base_image_alpine }}
+            BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
+            IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
+            IMAGE_TYPE=stable-alpine
+            TACHIDESK_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.release_commit }}
+            TACHIDESK_RELEASE_TAG=${{ steps.get_latest_release_metadata.outputs.release_tag }}
+            TACHIDESK_RELEASE_DOWNLOAD_URL=${{ steps.get_latest_release_metadata.outputs.release_url }}
+            TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
+            STARTUP_SCRIPT_URL=${{  env.startup_script_url }}
+            TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
+            JAVA_VERSION=${{  env.java_11_version }}
+          tags: |
+            test-image:stable-java11
+          outputs: type=docker,dest=/tmp/test_image_stable_java11.tar
+
+      - name: Docker Run Test Stable Image Java11
+        id: docker_run_test_image_stable_java11
+        run: |
+            docker load --input /tmp/test_image_stable_java11.tar
+            mkdir -p /home/runner/work/_temp/tachidesk_java11
+            chmod -R 777 /home/runner/work/_temp/tachidesk_java11
+            docker run --rm -d -p 127.0.0.1:4568:4567 -v /home/runner/work/_temp/tachidesk_java11:/home/suwayomi/.local/share/Tachidesk --name=test_image_stable_java11 test-image:stable-java11
+            sleep 15
+            cat /home/runner/work/_temp/tachidesk_java11/logfile.log
+            curl -s 127.0.0.1:4568/api/v1/settings/about/ && val=$(curl -s 127.0.0.1:4568/api/v1/settings/about/ | grep -o "Tachidesk" | sort --unique)
+            if [[ $val == "Tachidesk" ]]; then
+                echo ""
+                echo "Tachidesk stable java11 run successfully"
+                echo "::set-output name=value::true"
+                docker stop test_image_stable_java11
+            else
+                echo ""
+                echo "Tachidesk stable run Failed"
+                echo "::set-output name=value::false"
+                if [[ ${{ needs.check_workflow.outputs.enable_discord_hook }} == 'true' ]]; then
+                    curl \
+                      -F 'payload_json={"username": "Github", "content": "<@255018340244914177>\n<@785012853178499073>\nDocker Stable Java11 Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
+                      -F "file1=@/home/runner/work/_temp/tachidesk/logfile.log" \
+                      "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
+                fi
+                exit 1
+            fi
       
       - name: Delete docker files
         run: |
@@ -413,6 +463,7 @@ jobs:
             TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
             STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
+            JAVA_VERSION=${{  env.java_8_version }}
           tags: |
             test-image:preview
           outputs: type=docker,dest=/tmp/test_image_preview.tar
@@ -440,6 +491,59 @@ jobs:
                 if [[ ${{ needs.check_workflow.outputs.enable_discord_hook }} == 'true' ]]; then                
                     curl \
                       -F 'payload_json={"username": "Github", "content": "<@255018340244914177>\n<@785012853178499073>\nDocker Preview Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
+                      -F "file1=@/home/runner/work/_temp/tachidesk/logfile.log" \
+                      "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
+                fi
+                exit 1
+            fi            
+            docker system prune -a -f --volumes
+
+      - name: Build and save preview alpine java11
+        id: docker_build_release_alpine_java11
+        uses: docker/build-push-action@v3
+        with:
+          file: scripts/dockerfiles/Git_Actions-Dockerfile
+          platforms: ${{ env.build_base_image_alpine_platform_testing }}
+          build-args: |
+            BASE_IMAGE=${{ env.build_base_image_alpine }}
+            BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
+            IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
+            IMAGE_TYPE=preview-alpine
+            TACHIDESK_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.release_commit }}
+            TACHIDESK_RELEASE_TAG=${{ steps.get_latest_release_metadata.outputs.release_tag }}
+            TACHIDESK_RELEASE_DOWNLOAD_URL=${{ steps.get_latest_release_metadata.outputs.release_url }}
+            TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
+            STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
+            TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
+            JAVA_VERSION=${{  env.java_11_version }}
+          tags: |
+            test-image:preview-java11
+          outputs: type=docker,dest=/tmp/test_image_preview_java11.tar
+
+          
+      - name: Docker Run Test Preview Image Java11
+        id: docker_run_test_image_preview_java11
+        run: |
+            docker load --input /tmp/test_image_preview_java11.tar
+            mkdir -p /home/runner/work/_temp/tachidesk_java11
+            chmod -R 777 /home/runner/work/_temp/tachidesk_java11
+            docker run --rm -d -p 127.0.0.1:4569:4567 -v /home/runner/work/_temp/tachidesk_java11:/home/suwayomi/.local/share/Tachidesk  --name=test_image_preview_java11 test-image:preview-java11
+            sleep 15
+            cat /home/runner/work/_temp/tachidesk/logfile.log
+            curl -s 127.0.0.1:4569/api/v1/settings/about/ && val=$(curl -s 127.0.0.1:4569/api/v1/settings/about/ | grep -o "Tachidesk" | sort --unique)
+            if [[ $val == "Tachidesk" ]]; then
+                echo ""
+                echo "Tachidesk preview java11 run successfully"
+                echo "::set-output name=value::true"
+                docker stop test_image_preview_java11
+                run_check="true"
+            else
+                echo ""
+                echo "Tachidesk preview java11 run Failed"
+                echo "::set-output name=value::false"
+                if [[ ${{ needs.check_workflow.outputs.enable_discord_hook }} == 'true' ]]; then                
+                    curl \
+                      -F 'payload_json={"username": "Github", "content": "<@255018340244914177>\n<@785012853178499073>\nDocker Preview Java11 Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
                       -F "file1=@/home/runner/work/_temp/tachidesk/logfile.log" \
                       "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
                 fi
