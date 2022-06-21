@@ -19,10 +19,13 @@ env:
   build_repo_docker: 'tachidesk'
   build_base_image_alpine: 'alpine:3.15'
   build_base_image_alpine_platform: 'linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x'
+  build_base_image_alpine_platform_java11: 'linux/amd64,linux/arm64/v8,linux/ppc64le,linux/s390x'
   build_base_image_alpine_platform_testing: 'linux/amd64'
   startup_script_url: 'https://raw.githubusercontent.com/${{ github.repository }}/main/scripts/startup_script.sh'
   tachidesk_webui_stable_url: 'https://api.github.com/repos/suwayomi/Tachidesk-Server/releases/latest'
   tachidesk_webui_preview_url: 'https://api.github.com/repos/suwayomi/Tachidesk-Server-preview/releases/latest'
+  java_8_version: openjdk8-jre-base
+  java_11_version: openjdk11-jre-headless
   
 jobs:
   check_workflow:
@@ -196,6 +199,7 @@ jobs:
             TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
             STARTUP_SCRIPT_URL=${{  env.startup_script_url }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
+            JAVA_VERSION=${{  env.java_8_version }}
           tags: |
             test-image:stable
           outputs: type=docker,dest=/tmp/test_image_stable.tar
@@ -280,9 +284,36 @@ jobs:
             STARTUP_SCRIPT_URL=${{  env.startup_script_url }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_stable.outputs.tachidesk_docker_git_commit }}
             IMAGE_OWNER=${{ needs.check_stable.outputs.repository_owner_lower }}
+            JAVA_VERSION=${{  env.java_8_version }}
           tags: |
             ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:latest
             ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:${{ needs.check_stable.outputs.release_tag }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Build and push stable alpine java11
+        id: docker_build_release_alpine
+        uses: docker/build-push-action@v3
+        with:
+          file: scripts/dockerfiles/Git_Actions-Dockerfile
+          platforms: ${{ env.build_base_image_alpine_platform_java11 }}
+          push: ${{ needs.check_stable.outputs.enable_build_publish == 'true' }}
+          build-args: |
+            BASE_IMAGE=${{ env.build_base_image_alpine }}
+            BUILD_DATE=${{ needs.check_stable.outputs.build_date }}
+            IMAGE_VERSION=${{ needs.check_stable.outputs.release_version }}
+            IMAGE_TYPE=stable-alpine
+            TACHIDESK_GIT_COMMIT=${{ needs.check_stable.outputs.release_commit }}
+            TACHIDESK_RELEASE_TAG=${{ needs.check_stable.outputs.release_tag }}
+            TACHIDESK_RELEASE_DOWNLOAD_URL=${{ needs.check_stable.outputs.release_url }}
+            TACHIDESK_FILENAME=${{ needs.check_stable.outputs.release_filename }}
+            STARTUP_SCRIPT_URL=${{  env.startup_script_url }}
+            TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_stable.outputs.tachidesk_docker_git_commit }}
+            IMAGE_OWNER=${{ needs.check_stable.outputs.repository_owner_lower }}
+            JAVA_VERSION=${{  env.java_11_version }}
+          tags: |
+            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:latest-java11
+            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:${{ needs.check_stable.outputs.release_tag }}-java11
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
@@ -466,9 +497,35 @@ jobs:
             TACHIDESK_FILENAME=${{ needs.check_preview.outputs.release_filename }}
             STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_preview.outputs.tachidesk_docker_git_commit }}
-            IMAGE_OWNER=${{ needs.check_preview.outputs.repository_owner_lower }}            
+            IMAGE_OWNER=${{ needs.check_preview.outputs.repository_owner_lower }}          
+            JAVA_VERSION=${{  env.java_8_version }}  
           tags: |
             ghcr.io/${{ needs.check_preview.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:preview
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Build and push preview alpine java11
+        id: docker_build_release_alpine
+        uses: docker/build-push-action@v3
+        with:
+          file: scripts/dockerfiles/Git_Actions-Dockerfile
+          platforms: ${{ env.build_base_image_alpine_platform_java11 }}
+          push: ${{ needs.check_preview.outputs.enable_build_publish == 'true' }}
+          build-args: |
+            BASE_IMAGE=${{ env.build_base_image_alpine }}
+            BUILD_DATE=${{ needs.check_preview.outputs.build_date }}
+            IMAGE_VERSION=${{ needs.check_preview.outputs.release_version }}
+            IMAGE_TYPE=preview-alpine
+            TACHIDESK_GIT_COMMIT=${{ needs.check_preview.outputs.release_commit }}
+            TACHIDESK_RELEASE_TAG=${{ needs.check_preview.outputs.release_tag }}
+            TACHIDESK_RELEASE_DOWNLOAD_URL=${{ needs.check_preview.outputs.release_url }}
+            TACHIDESK_FILENAME=${{ needs.check_preview.outputs.release_filename }}
+            STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
+            TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_preview.outputs.tachidesk_docker_git_commit }}
+            IMAGE_OWNER=${{ needs.check_preview.outputs.repository_owner_lower }}          
+            JAVA_VERSION=${{  env.java_11_version }}  
+          tags: |
+            ghcr.io/${{ needs.check_preview.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:preview-java11
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
