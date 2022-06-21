@@ -1,8 +1,6 @@
 FROM alpine:latest
 
-ARG JAVA_VERSION
-
-RUN apk --update add "$JAVA_VERSION" tzdata
+RUN apk --update add curl openjdk8-jre-base tzdata
 
 RUN addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi
 
