@@ -13,6 +13,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=< change it to your timezone > # Use TZ database name from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+      - LOGGING=file
     volumes:
       - /<path to folder>/docker-config/tachidesk:/home/suwayomi/.local/share/Tachidesk # edit <path to folder> to your mapped folder
     ports:
