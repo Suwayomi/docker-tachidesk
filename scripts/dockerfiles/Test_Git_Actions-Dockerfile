@@ -12,9 +12,9 @@ ARG TACHIDESK_FILENAME
 ARG TACHIDESK_RELEASE_DOWNLOAD_URL
 ARG TACHIDESK_DOCKER_GIT_COMMIT
 ARG STARTUP_SCRIPT_URL
+ARG JAVA_VERSION
 
-RUN if echo "$BASE_IMAGE" | grep -q "alpine"; then apk --update add curl openjdk8-jre-base tzdata shadow && addgroup -g 1000 suwayomi && \
-    adduser -u 1000 -G suwayomi -h /home/suwayomi -s /bin/sh -D suwayomi; \
+RUN if echo "$BASE_IMAGE" | grep -q "alpine"; then apk --update add curl "$JAVA_VERSION" tzdata && addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi; \
 	elif echo "$BASE_IMAGE" | grep -q "openjdk"; then useradd -ms /bin/sh suwayomi; else echo "wrong base image"; fi
 
 LABEL maintainer="suwayomi" \
