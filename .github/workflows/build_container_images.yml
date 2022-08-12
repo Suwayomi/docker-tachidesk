@@ -2,6 +2,12 @@ name: Build Container Images
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '**/README.md'
+      - '**/Dockerfile'
+      - '**/save_docker_pull_count.yml'
+      - '**/build_test_images.yml'
+      - '**/Test_Git_Actions-Dockerfile'
   pull_request:
     branches: [ main ]
   workflow_dispatch:
