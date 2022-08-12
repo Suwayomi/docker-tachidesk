@@ -76,7 +76,7 @@ jobs:
         with:
           file: scripts/dockerfiles/Test_Git_Actions-Dockerfile
           platforms: ${{ env.build_base_image_alpine_platform }}
-          push: ${{ steps.get_latest_release_metadata.outputs.enable_build_publish == 'true' }}
+          push: true
           build-args: |
             BASE_IMAGE=${{ env.build_base_image_alpine }}
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
