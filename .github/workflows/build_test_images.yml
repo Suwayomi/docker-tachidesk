@@ -18,7 +18,6 @@ env:
 jobs:           
           
   build_stable:
-    needs: check_stable
     runs-on: ubuntu-latest
 
     steps: 
