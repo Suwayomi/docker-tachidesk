@@ -1,0 +1,91 @@
+name: Build Test Images
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+
+env:
+  build_repo_docker: 'tachidesk'
+  build_base_image_alpine: 'alpine:3.16'
+  build_base_image_alpine_platform: 'linux/amd64'
+  startup_script_url: 'https://raw.githubusercontent.com/${{ github.repository }}/main/scripts/startup_script.sh'
+  tachidesk_webui_stable_url: 'https://api.github.com/repos/suwayomi/Tachidesk-Server/releases/latest'
+  java_8_version: openjdk8-jre-base
+  
+jobs:           
+          
+  build_stable:
+    needs: check_stable
+    runs-on: ubuntu-latest
+
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          path: main
+          fetch-depth: 0
+          
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2 
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: get latest release metadata
+        id: get_latest_release_metadata
+        run: |
+          cd main
+          release_url=$(curl -s ${{ env.tachidesk_webui_stable_url }} | egrep -o "https://.*./releases/download.*.Tachidesk-Server.*.jar")          
+          release_tag=$(curl -s ${{ env.tachidesk_webui_stable_url }} | egrep -o "tag_name.*.v[0-9]+.[0-9]+.[0-9]+" | egrep -o "v[0-9]+.[0-9]+.[0-9]+")
+          release_var=$(echo $release_url | egrep -o "Tachidesk-Server-$release_tag-r[0-9]+.jar" | egrep -o "$release_tag-r[0-9]+")
+          release_commit=$(echo $release_var | cut -f2 -d"r")
+          release_filename=Tachidesk-Server-${release_var}.jar
+          release_version=$(echo $release_tag | cut -c2-)
+          echo "::set-output name=release_url::$release_url"
+          echo "::set-output name=release_commit::$release_commit"
+          echo "::set-output name=release_tag::$release_tag"
+          echo "::set-output name=release_filename::$release_filename"
+          echo "::set-output name=release_version::$release_version"
+          echo "::set-output name=release_var::$release_var"
+          tachidesk_docker_git_commit=$(git rev-list --count HEAD)
+          echo "::set-output name=tachidesk_docker_git_commit::$tachidesk_docker_git_commit"
+          build_date=$(date "+%F")
+          echo "::set-output name=build_date::$build_date"
+          echo "::set-output name=repository_owner_lower::$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')"
+          
+      - name: Build and push stable alpine
+        id: docker_build_release_alpine
+        uses: docker/build-push-action@v3
+        with:
+          file: scripts/dockerfiles/Test_Git_Actions-Dockerfile
+          platforms: ${{ env.build_base_image_alpine_platform }}
+          push: ${{ steps.get_latest_release_metadata.outputs.enable_build_publish == 'true' }}
+          build-args: |
+            BASE_IMAGE=${{ env.build_base_image_alpine }}
+            BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
+            IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
+            IMAGE_TYPE=develop-alpine
+            TACHIDESK_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.release_commit }}
+            TACHIDESK_RELEASE_TAG=${{ steps.get_latest_release_metadata.outputs.release_tag }}
+            TACHIDESK_RELEASE_DOWNLOAD_URL=${{ steps.get_latest_release_metadata.outputs.release_url }}
+            TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
+            STARTUP_SCRIPT_URL=${{  env.startup_script_url }}
+            TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
+            IMAGE_OWNER=${{ steps.get_latest_release_metadata.outputs.repository_owner_lower }}
+            JAVA_VERSION=${{  env.java_8_version }}
+          tags: |
+            ghcr.io/${{ steps.get_latest_release_metadata.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:develop
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
