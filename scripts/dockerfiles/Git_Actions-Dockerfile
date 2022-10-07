@@ -12,7 +12,6 @@ ARG TACHIDESK_FILENAME
 ARG TACHIDESK_RELEASE_DOWNLOAD_URL
 ARG TACHIDESK_DOCKER_GIT_COMMIT
 ARG STARTUP_SCRIPT_URL
-ARG JAVA_VERSION
 
 RUN if echo "$BASE_IMAGE" | grep -q "openjdk"; then useradd -ms /bin/sh suwayomi; \
     elif echo "$BASE_IMAGE" | grep -q "eclipse-temurin"; then \
@@ -20,7 +19,7 @@ RUN if echo "$BASE_IMAGE" | grep -q "openjdk"; then useradd -ms /bin/sh suwayomi
             apk --update add curl tzdata && addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi; \
         else \
             useradd -ms /bin/sh suwayomi && apt update && apt install libc++-dev -y; fi; \
-    elif echo "$BASE_IMAGE" | grep -q "alpine"; then apk --update add curl "$JAVA_VERSION" tzdata && addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi; \
+    elif echo "$BASE_IMAGE" | grep -q "alpine"; then apk --update add curl openjdk8-jre-base tzdata && addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi; \
     else echo "wrong base image"; \
     fi
 

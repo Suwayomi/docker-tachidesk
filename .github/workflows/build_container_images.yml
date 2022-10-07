@@ -23,15 +23,15 @@ on:
 
 env:
   build_repo_docker: 'tachidesk'
-  build_base_image_temurin_ubuntu: 'eclipse-temurin:11-jre-jammy'
-  build_base_image_temurin_alpine: 'eclipse-temurin:11-jre-alpine'
-  build_base_image_temurin_platform: 'linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x'
+  build_base_image_temurin: 'eclipse-temurin:11-jre-jammy'
+  build_base_image_temurin_platform: 'linux/amd64,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x'
   build_base_image_temurin_platform_testing: 'linux/amd64'
+  build_base_image_alpine: 'alpine:3.16'
+  build_base_image_alpine_platform: 'linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x'
+  build_base_image_alpine_platform_testing: 'linux/amd64'
   startup_script_url: 'https://raw.githubusercontent.com/${{ github.repository }}/main/scripts/startup_script.sh'
   tachidesk_webui_stable_url: 'https://api.github.com/repos/suwayomi/Tachidesk-Server/releases/latest'
   tachidesk_webui_preview_url: 'https://api.github.com/repos/suwayomi/Tachidesk-Server-preview/releases/latest'
-  java_8_version: openjdk8-jre-base
-  java_11_version: openjdk11-jre-headless
   
 jobs:
   check_workflow:
@@ -195,7 +195,7 @@ jobs:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
           platforms: ${{ env.build_base_image_temurin_platform_testing }}
           build-args: |
-            BASE_IMAGE=${{ env.build_base_image_temurin_ubuntu }}
+            BASE_IMAGE=${{ env.build_base_image_temurin }}
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
             IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
             IMAGE_TYPE=stable-ubuntu
@@ -242,9 +242,9 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
-          platforms: ${{ env.build_base_image_temurin_platform_testing }}
+          platforms: ${{ env.build_base_image_alpine_platform_testing }}
           build-args: |
-            BASE_IMAGE=${{ env.build_base_image_temurin_alpine }}
+            BASE_IMAGE=${{ env.build_base_image_alpine }}
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
             IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
             IMAGE_TYPE=stable-alpine
@@ -329,7 +329,7 @@ jobs:
           platforms: ${{ env.build_base_image_temurin_platform }}
           push: ${{ needs.check_stable.outputs.enable_build_publish == 'true' }}
           build-args: |
-            BASE_IMAGE=${{ env.build_base_image_temurin_ubuntu }}
+            BASE_IMAGE=${{ env.build_base_image_temurin }}
             BUILD_DATE=${{ needs.check_stable.outputs.build_date }}
             IMAGE_VERSION=${{ needs.check_stable.outputs.release_version }}
             IMAGE_TYPE=stable-ubuntu
@@ -353,10 +353,10 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
-          platforms: ${{ env.build_base_image_temurin_platform }}
+          platforms: ${{ env.build_base_image_alpine_platform }}
           push: ${{ needs.check_stable.outputs.enable_build_publish == 'true' }}
           build-args: |
-            BASE_IMAGE=${{ env.build_base_image_temurin_alpine }}
+            BASE_IMAGE=${{ env.build_base_image_alpine }}
             BUILD_DATE=${{ needs.check_stable.outputs.build_date }}
             IMAGE_VERSION=${{ needs.check_stable.outputs.release_version }}
             IMAGE_TYPE=stable-alpine
@@ -459,7 +459,7 @@ jobs:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
           platforms: ${{ env.build_base_image_temurin_platform_testing }}
           build-args: |
-            BASE_IMAGE=${{ env.build_base_image_temurin_ubuntu }}
+            BASE_IMAGE=${{ env.build_base_image_temurin }}
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
             IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
             IMAGE_TYPE=preview-ubuntu
@@ -508,9 +508,9 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
-          platforms: ${{ env.build_base_image_temurin_platform_testing }}
+          platforms: ${{ env.build_base_image_alpine_platform_testing }}
           build-args: |
-            BASE_IMAGE=${{ env.build_base_image_temurin_alpine }}
+            BASE_IMAGE=${{ env.build_base_image_alpine }}
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
             IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
             IMAGE_TYPE=preview-alpine
@@ -597,7 +597,7 @@ jobs:
           platforms: ${{ env.build_base_image_temurin_platform }}
           push: ${{ needs.check_preview.outputs.enable_build_publish == 'true' }}
           build-args: |
-            BASE_IMAGE=${{ env.build_base_image_temurin_ubuntu }}
+            BASE_IMAGE=${{ env.build_base_image_temurin }}
             BUILD_DATE=${{ needs.check_preview.outputs.build_date }}
             IMAGE_VERSION=${{ needs.check_preview.outputs.release_version }}
             IMAGE_TYPE=preview-ubuntu
@@ -619,10 +619,10 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
-          platforms: ${{ env.build_base_image_temurin_platform }}
+          platforms: ${{ env.build_base_image_alpine_platform }}
           push: ${{ needs.check_preview.outputs.enable_build_publish == 'true' }}
           build-args: |
-            BASE_IMAGE=${{ env.build_base_image_temurin_alpine }}
+            BASE_IMAGE=${{ env.build_base_image_alpine }}
             BUILD_DATE=${{ needs.check_preview.outputs.build_date }}
             IMAGE_VERSION=${{ needs.check_preview.outputs.release_version }}
             IMAGE_TYPE=preview-alpine
