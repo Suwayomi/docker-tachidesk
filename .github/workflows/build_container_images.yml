@@ -23,7 +23,7 @@ on:
 
 env:
   build_repo_docker: 'tachidesk'
-  build_base_image_temurin_ubuntu: 'eclipse-temurin:11-jre-focal'
+  build_base_image_temurin_ubuntu: 'eclipse-temurin:11-jre-jammy'
   build_base_image_temurin_alpine: 'eclipse-temurin:11-jre-alpine'
   build_base_image_temurin_platform: 'linux/amd64,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x'
   build_base_image_temurin_platform_testing: 'linux/amd64'

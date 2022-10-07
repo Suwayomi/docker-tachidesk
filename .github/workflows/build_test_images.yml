@@ -15,7 +15,7 @@ on:
 
 env:
   build_repo_docker: 'tachidesk'
-  build_base_image_temurin_ubuntu: 'eclipse-temurin:11-jre-focal'
+  build_base_image_temurin_ubuntu: 'eclipse-temurin:11-jre-jammy'
   build_base_image_temurin_platform: 'linux/amd64'
   startup_script_url: 'https://raw.githubusercontent.com/${{ github.repository }}/main/scripts/startup_script.sh'
   tachidesk_webui_stable_url: 'https://api.github.com/repos/suwayomi/Tachidesk-Server/releases/latest'
