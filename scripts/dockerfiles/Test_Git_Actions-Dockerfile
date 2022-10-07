@@ -14,8 +14,12 @@ ARG TACHIDESK_DOCKER_GIT_COMMIT
 ARG STARTUP_SCRIPT_URL
 ARG JAVA_VERSION
 
-RUN if echo "$BASE_IMAGE" | grep -q "alpine"; then apk --update add curl "$JAVA_VERSION" tzdata && addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi; \
-	elif echo "$BASE_IMAGE" | grep -q "openjdk"; then useradd -ms /bin/sh suwayomi; else echo "wrong base image"; fi
+RUN if echo "$BASE_IMAGE" | grep -q "openjdk"; then useradd -ms /bin/sh suwayomi; \
+    elif echo "$BASE_IMAGE" | grep -q "eclipse-temurin"; then useradd -ms /bin/sh suwayomi && \
+        if echo "$BASE_IMAGE" | grep -q "alpine"; then echo "QuickJS not supported"; else sudo apt install libc++-dev -y; fi; \
+    elif echo "$BASE_IMAGE" | grep -q "alpine"; then apk --update add curl "$JAVA_VERSION" tzdata && addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi; \
+    else echo "wrong base image"; \
+    fi
 
 LABEL maintainer="suwayomi" \
       org.opencontainers.image.title="Tachidesk Docker" \

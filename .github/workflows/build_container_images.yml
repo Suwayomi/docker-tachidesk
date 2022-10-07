@@ -23,10 +23,9 @@ on:
 
 env:
   build_repo_docker: 'tachidesk'
-  build_base_image_alpine: 'alpine:3.16'
-  build_base_image_alpine_platform: 'linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x'
-  build_base_image_alpine_platform_java11: 'linux/amd64,linux/arm64/v8,linux/ppc64le'
-  build_base_image_alpine_platform_testing: 'linux/amd64'
+  build_base_image_temurin: 'eclipse-temurin:11-jre'
+  build_base_image_temurin_platform: 'linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x'
+  build_base_image_temurin_platform_testing: 'linux/amd64'
   startup_script_url: 'https://raw.githubusercontent.com/${{ github.repository }}/main/scripts/startup_script.sh'
   tachidesk_webui_stable_url: 'https://api.github.com/repos/suwayomi/Tachidesk-Server/releases/latest'
   tachidesk_webui_preview_url: 'https://api.github.com/repos/suwayomi/Tachidesk-Server-preview/releases/latest'
@@ -187,30 +186,29 @@ jobs:
           build_date=$(date "+%F")
           echo "::set-output name=build_date::$build_date"
           echo "::set-output name=repository_owner_lower::$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')"
-          
-      - name: Build and save stable alpine
-        id: docker_build_release_alpine
+
+      - name: Build and save stable ubuntu
+        id: docker_build_release_ubuntu
         uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
-          platforms: ${{ env.build_base_image_alpine_platform_testing }}
+          platforms: ${{ env.build_base_image_temurin_platform_testing }}
           build-args: |
-            BASE_IMAGE=${{ env.build_base_image_alpine }}
+            BASE_IMAGE=${{ env.build_base_image_temurin }}
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
             IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
-            IMAGE_TYPE=stable-alpine
+            IMAGE_TYPE=stable-ubuntu
             TACHIDESK_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.release_commit }}
             TACHIDESK_RELEASE_TAG=${{ steps.get_latest_release_metadata.outputs.release_tag }}
             TACHIDESK_RELEASE_DOWNLOAD_URL=${{ steps.get_latest_release_metadata.outputs.release_url }}
             TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
-            STARTUP_SCRIPT_URL=${{  env.startup_script_url }}
+            STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
-            JAVA_VERSION=${{  env.java_8_version }}
           tags: |
             test-image:stable
           outputs: type=docker,dest=/tmp/test_image_stable.tar
 
-      - name: Docker Run Test Stable Image
+      - name: Docker Run Test Stable Ubuntu Image
         id: docker_run_test_image_stable
         run: |
             docker load --input /tmp/test_image_stable.tar
@@ -222,30 +220,30 @@ jobs:
             curl -s 127.0.0.1:4568/api/v1/settings/about/ && val=$(curl -s 127.0.0.1:4568/api/v1/settings/about/ | grep -o "Tachidesk" | sort --unique)
             if [[ $val == "Tachidesk" ]]; then
                 echo ""
-                echo "Tachidesk stable run successfully"
+                echo "Tachidesk stable ubuntu run successfully"
                 echo "::set-output name=value::true"
                 docker stop test_image_stable
             else
                 echo ""
-                echo "Tachidesk stable run Failed"
+                echo "Tachidesk stable ubuntu run Failed"
                 echo "::set-output name=value::false"
                 if [[ ${{ needs.check_workflow.outputs.enable_discord_hook }} == 'true' ]]; then
                     curl \
-                      -F 'payload_json={"username": "Github", "content": "<@255018340244914177>\n<@785012853178499073>\nDocker Stable Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
+                      -F 'payload_json={"username": "Github", "content": "<@255018340244914177>\n<@785012853178499073>\nDocker Stable Ubuntu Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
                       -F "file1=@/home/runner/work/_temp/tachidesk/logfile.log" \
                       "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
                 fi
                 exit 1
             fi
 
-      - name: Build and save stable alpine java11
-        id: docker_build_release_alpine_java11
+      - name: Build and save stable alpine
+        id: docker_build_release_alpine
         uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
-          platforms: ${{ env.build_base_image_alpine_platform_testing }}
+          platforms: ${{ env.build_base_image_temurin_platform_testing }}
           build-args: |
-            BASE_IMAGE=${{ env.build_base_image_alpine }}
+            BASE_IMAGE=${{ env.build_base_image_temurin }}-alpine
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
             IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
             IMAGE_TYPE=stable-alpine
@@ -255,34 +253,33 @@ jobs:
             TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
             STARTUP_SCRIPT_URL=${{  env.startup_script_url }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
-            JAVA_VERSION=${{  env.java_11_version }}
           tags: |
-            test-image:stable-java11
-          outputs: type=docker,dest=/tmp/test_image_stable_java11.tar
+            test-image:stable-alpine
+          outputs: type=docker,dest=/tmp/test_image_stable_alpine.tar
 
-      - name: Docker Run Test Stable Image Java11
-        id: docker_run_test_image_stable_java11
+      - name: Docker Run Test Stable Alpine Image
+        id: docker_run_test_image_stable_alpine
         run: |
-            docker load --input /tmp/test_image_stable_java11.tar
-            mkdir -p /home/runner/work/_temp/tachidesk_java11
-            chmod -R 777 /home/runner/work/_temp/tachidesk_java11
-            docker run --rm -d -p 127.0.0.1:4568:4567 -v /home/runner/work/_temp/tachidesk_java11:/home/suwayomi/.local/share/Tachidesk --name=test_image_stable_java11 test-image:stable-java11
+            docker load --input /tmp/test_image_stable_alpine.tar
+            mkdir -p /home/runner/work/_temp/tachidesk_alpine
+            chmod -R 777 /home/runner/work/_temp/tachidesk_alpine
+            docker run --rm -d -p 127.0.0.1:4568:4567 -v /home/runner/work/_temp/tachidesk_alpine:/home/suwayomi/.local/share/Tachidesk --name=test_image_stable_alpine test-image:stable-alpine
             sleep 15
-            cat /home/runner/work/_temp/tachidesk_java11/logfile.log
+            cat /home/runner/work/_temp/tachidesk_alpine/logfile.log
             curl -s 127.0.0.1:4568/api/v1/settings/about/ && val=$(curl -s 127.0.0.1:4568/api/v1/settings/about/ | grep -o "Tachidesk" | sort --unique)
             if [[ $val == "Tachidesk" ]]; then
                 echo ""
-                echo "Tachidesk stable java11 run successfully"
+                echo "Tachidesk stable alpine run successfully"
                 echo "::set-output name=value::true"
-                docker stop test_image_stable_java11
+                docker stop test_image_stable_alpine
             else
                 echo ""
-                echo "Tachidesk stable run Failed"
+                echo "Tachidesk stable alpine run Failed"
                 echo "::set-output name=value::false"
                 if [[ ${{ needs.check_workflow.outputs.enable_discord_hook }} == 'true' ]]; then
                     curl \
-                      -F 'payload_json={"username": "Github", "content": "<@255018340244914177>\n<@785012853178499073>\nDocker Stable Java11 Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
-                      -F "file1=@/home/runner/work/_temp/tachidesk/logfile.log" \
+                      -F 'payload_json={"username": "Github", "content": "<@255018340244914177>\n<@785012853178499073>\nDocker Stable Alpine Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
+                      -F "file1=@/home/runner/work/_temp/tachidesk_alpine/logfile.log" \
                       "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
                 fi
                 exit 1
@@ -291,7 +288,9 @@ jobs:
       - name: Delete docker files
         run: |
           rm -f /tmp/test_image_stable.tar
+          rm -f /tmp/test_image_stable_alpine.tar
           #rm -rf /home/runner/work/_temp/tachidesk
+          #rm -rf /home/runner/work/_temp/tachidesk_alpine
           
 
   build_stable:
@@ -321,15 +320,42 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
           
+      - name: Build and push stable ubuntu
+        id: docker_build_release_ubuntu
+        uses: docker/build-push-action@v3
+        with:
+          file: scripts/dockerfiles/Git_Actions-Dockerfile
+          platforms: ${{ env.build_base_image_temurin_platform }}
+          push: ${{ needs.check_stable.outputs.enable_build_publish == 'true' }}
+          build-args: |
+            BASE_IMAGE=${{ env.build_base_image_temurin }}
+            BUILD_DATE=${{ needs.check_stable.outputs.build_date }}
+            IMAGE_VERSION=${{ needs.check_stable.outputs.release_version }}
+            IMAGE_TYPE=stable-ubuntu
+            TACHIDESK_GIT_COMMIT=${{ needs.check_stable.outputs.release_commit }}
+            TACHIDESK_RELEASE_TAG=${{ needs.check_stable.outputs.release_tag }}
+            TACHIDESK_RELEASE_DOWNLOAD_URL=${{ needs.check_stable.outputs.release_url }}
+            TACHIDESK_FILENAME=${{ needs.check_stable.outputs.release_filename }}
+            STARTUP_SCRIPT_URL=${{  env.startup_script_url }}
+            TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_stable.outputs.tachidesk_docker_git_commit }}
+            IMAGE_OWNER=${{ needs.check_stable.outputs.repository_owner_lower }}
+          tags: |
+            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:latest
+            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:${{ needs.check_stable.outputs.release_tag }}
+            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:latest-ubuntu
+            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:${{ needs.check_stable.outputs.release_tag }}-ubuntu
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
       - name: Build and push stable alpine
         id: docker_build_release_alpine
         uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
-          platforms: ${{ env.build_base_image_alpine_platform }}
+          platforms: ${{ env.build_base_image_temurin_platform }}
           push: ${{ needs.check_stable.outputs.enable_build_publish == 'true' }}
           build-args: |
-            BASE_IMAGE=${{ env.build_base_image_alpine }}
+            BASE_IMAGE=${{ env.build_base_image_temurin }}-alpine
             BUILD_DATE=${{ needs.check_stable.outputs.build_date }}
             IMAGE_VERSION=${{ needs.check_stable.outputs.release_version }}
             IMAGE_TYPE=stable-alpine
@@ -340,36 +366,9 @@ jobs:
             STARTUP_SCRIPT_URL=${{  env.startup_script_url }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_stable.outputs.tachidesk_docker_git_commit }}
             IMAGE_OWNER=${{ needs.check_stable.outputs.repository_owner_lower }}
-            JAVA_VERSION=${{  env.java_8_version }}
           tags: |
-            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:latest
-            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:${{ needs.check_stable.outputs.release_tag }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-
-      - name: Build and push stable alpine java11
-        id: docker_build_release_alpine_java11
-        uses: docker/build-push-action@v3
-        with:
-          file: scripts/dockerfiles/Git_Actions-Dockerfile
-          platforms: ${{ env.build_base_image_alpine_platform_java11 }}
-          push: ${{ needs.check_stable.outputs.enable_build_publish == 'true' }}
-          build-args: |
-            BASE_IMAGE=${{ env.build_base_image_alpine }}
-            BUILD_DATE=${{ needs.check_stable.outputs.build_date }}
-            IMAGE_VERSION=${{ needs.check_stable.outputs.release_version }}
-            IMAGE_TYPE=stable-alpine
-            TACHIDESK_GIT_COMMIT=${{ needs.check_stable.outputs.release_commit }}
-            TACHIDESK_RELEASE_TAG=${{ needs.check_stable.outputs.release_tag }}
-            TACHIDESK_RELEASE_DOWNLOAD_URL=${{ needs.check_stable.outputs.release_url }}
-            TACHIDESK_FILENAME=${{ needs.check_stable.outputs.release_filename }}
-            STARTUP_SCRIPT_URL=${{  env.startup_script_url }}
-            TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_stable.outputs.tachidesk_docker_git_commit }}
-            IMAGE_OWNER=${{ needs.check_stable.outputs.repository_owner_lower }}
-            JAVA_VERSION=${{  env.java_11_version }}
-          tags: |
-            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:latest-java11
-            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:${{ needs.check_stable.outputs.release_tag }}-java11
+            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:latest-alpine
+            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:${{ needs.check_stable.outputs.release_tag }}-alpine
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
@@ -452,29 +451,28 @@ jobs:
           echo "::set-output name=build_date::$build_date"
           echo "::set-output name=repository_owner_lower::$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')"          
           
-      - name: Build and save preview alpine
-        id: docker_build_release_alpine
+      - name: Build and save preview ubuntu
+        id: docker_build_release_ubuntu
         uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
-          platforms: ${{ env.build_base_image_alpine_platform_testing }}
+          platforms: ${{ env.build_base_image_temurin_platform_testing }}
           build-args: |
-            BASE_IMAGE=${{ env.build_base_image_alpine }}
+            BASE_IMAGE=${{ env.build_base_image_temurin }}
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
             IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
-            IMAGE_TYPE=preview-alpine
+            IMAGE_TYPE=preview-ubuntu
             TACHIDESK_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.release_commit }}
             TACHIDESK_RELEASE_TAG=${{ steps.get_latest_release_metadata.outputs.release_tag }}
             TACHIDESK_RELEASE_DOWNLOAD_URL=${{ steps.get_latest_release_metadata.outputs.release_url }}
             TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
             STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
-            JAVA_VERSION=${{  env.java_8_version }}
           tags: |
             test-image:preview
           outputs: type=docker,dest=/tmp/test_image_preview.tar
           
-      - name: Docker Run Test Preview Image
+      - name: Docker Run Test Preview Image Ubuntu
         id: docker_run_test_image_preview
         run: |
             docker load --input /tmp/test_image_preview.tar
@@ -504,14 +502,14 @@ jobs:
             fi            
             docker system prune -a -f --volumes
 
-      - name: Build and save preview alpine java11
-        id: docker_build_release_alpine_java11
+      - name: Build and save preview alpine
+        id: docker_build_release_alpine
         uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
-          platforms: ${{ env.build_base_image_alpine_platform_testing }}
+          platforms: ${{ env.build_base_image_temurin_platform_testing }}
           build-args: |
-            BASE_IMAGE=${{ env.build_base_image_alpine }}
+            BASE_IMAGE=${{ env.build_base_image_temurin }}-alpine
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
             IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
             IMAGE_TYPE=preview-alpine
@@ -521,36 +519,35 @@ jobs:
             TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
             STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
-            JAVA_VERSION=${{  env.java_11_version }}
           tags: |
-            test-image:preview-java11
-          outputs: type=docker,dest=/tmp/test_image_preview_java11.tar
+            test-image:preview-alpine
+          outputs: type=docker,dest=/tmp/test_image_preview_alpine.tar
 
           
-      - name: Docker Run Test Preview Image Java11
-        id: docker_run_test_image_preview_java11
+      - name: Docker Run Test Preview Image Alpine
+        id: docker_run_test_image_preview_alpine
         run: |
-            docker load --input /tmp/test_image_preview_java11.tar
-            mkdir -p /home/runner/work/_temp/tachidesk_java11
-            chmod -R 777 /home/runner/work/_temp/tachidesk_java11
-            docker run --rm -d -p 127.0.0.1:4569:4567 -v /home/runner/work/_temp/tachidesk_java11:/home/suwayomi/.local/share/Tachidesk  --name=test_image_preview_java11 test-image:preview-java11
+            docker load --input /tmp/test_image_preview_alpine.tar
+            mkdir -p /home/runner/work/_temp/tachidesk_alpine
+            chmod -R 777 /home/runner/work/_temp/tachidesk_alpine
+            docker run --rm -d -p 127.0.0.1:4569:4567 -v /home/runner/work/_temp/tachidesk_alpine:/home/suwayomi/.local/share/Tachidesk  --name=test_image_preview_alpine test-image:preview-alpine
             sleep 15
-            cat /home/runner/work/_temp/tachidesk/logfile.log
+            cat /home/runner/work/_temp/tachidesk_alpine/logfile.log
             curl -s 127.0.0.1:4569/api/v1/settings/about/ && val=$(curl -s 127.0.0.1:4569/api/v1/settings/about/ | grep -o "Tachidesk" | sort --unique)
             if [[ $val == "Tachidesk" ]]; then
                 echo ""
-                echo "Tachidesk preview java11 run successfully"
+                echo "Tachidesk preview alpine run successfully"
                 echo "::set-output name=value::true"
-                docker stop test_image_preview_java11
+                docker stop test_image_preview_alpine
                 run_check="true"
             else
                 echo ""
-                echo "Tachidesk preview java11 run Failed"
+                echo "Tachidesk preview alpine run Failed"
                 echo "::set-output name=value::false"
                 if [[ ${{ needs.check_workflow.outputs.enable_discord_hook }} == 'true' ]]; then                
                     curl \
-                      -F 'payload_json={"username": "Github", "content": "<@255018340244914177>\n<@785012853178499073>\nDocker Preview Java11 Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
-                      -F "file1=@/home/runner/work/_temp/tachidesk/logfile.log" \
+                      -F 'payload_json={"username": "Github", "content": "<@255018340244914177>\n<@785012853178499073>\nDocker Preview Alpine Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
+                      -F "file1=@/home/runner/work/_temp/tachidesk_alpine/logfile.log" \
                       "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
                 fi
                 exit 1
@@ -560,7 +557,9 @@ jobs:
       - name: Delete docker files
         run: |
           rm -f /tmp/test_image_preview.tar
+          rm -f /tmp/test_image_preview_alpine.tar
           #rm -rf /home/runner/work/_temp/tachidesk
+          #rm -rf /home/runner/work/_temp/tachidesk_alpine
 
   build_preview:
     needs: check_preview
@@ -589,15 +588,40 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
   
+      - name: Build and push preview ubuntu
+        id: docker_build_release_ubuntu
+        uses: docker/build-push-action@v3
+        with:
+          file: scripts/dockerfiles/Git_Actions-Dockerfile
+          platforms: ${{ env.build_base_image_temurin_platform }}
+          push: ${{ needs.check_preview.outputs.enable_build_publish == 'true' }}
+          build-args: |
+            BASE_IMAGE=${{ env.build_base_image_temurin }}
+            BUILD_DATE=${{ needs.check_preview.outputs.build_date }}
+            IMAGE_VERSION=${{ needs.check_preview.outputs.release_version }}
+            IMAGE_TYPE=preview-ubuntu
+            TACHIDESK_GIT_COMMIT=${{ needs.check_preview.outputs.release_commit }}
+            TACHIDESK_RELEASE_TAG=${{ needs.check_preview.outputs.release_tag }}
+            TACHIDESK_RELEASE_DOWNLOAD_URL=${{ needs.check_preview.outputs.release_url }}
+            TACHIDESK_FILENAME=${{ needs.check_preview.outputs.release_filename }}
+            STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
+            TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_preview.outputs.tachidesk_docker_git_commit }}
+            IMAGE_OWNER=${{ needs.check_preview.outputs.repository_owner_lower }}          
+          tags: |
+            ghcr.io/${{ needs.check_preview.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:preview
+            ghcr.io/${{ needs.check_preview.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:preview-ubuntu
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
       - name: Build and push preview alpine
         id: docker_build_release_alpine
         uses: docker/build-push-action@v3
         with:
           file: scripts/dockerfiles/Git_Actions-Dockerfile
-          platforms: ${{ env.build_base_image_alpine_platform }}
+          platforms: ${{ env.build_base_image_temurin_platform }}
           push: ${{ needs.check_preview.outputs.enable_build_publish == 'true' }}
           build-args: |
-            BASE_IMAGE=${{ env.build_base_image_alpine }}
+            BASE_IMAGE=${{ env.build_base_image_temurin }}-alpine
             BUILD_DATE=${{ needs.check_preview.outputs.build_date }}
             IMAGE_VERSION=${{ needs.check_preview.outputs.release_version }}
             IMAGE_TYPE=preview-alpine
@@ -608,34 +632,8 @@ jobs:
             STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_preview.outputs.tachidesk_docker_git_commit }}
             IMAGE_OWNER=${{ needs.check_preview.outputs.repository_owner_lower }}          
-            JAVA_VERSION=${{  env.java_8_version }}  
           tags: |
-            ghcr.io/${{ needs.check_preview.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:preview
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-
-      - name: Build and push preview alpine java11
-        id: docker_build_release_alpine_java11
-        uses: docker/build-push-action@v3
-        with:
-          file: scripts/dockerfiles/Git_Actions-Dockerfile
-          platforms: ${{ env.build_base_image_alpine_platform_java11 }}
-          push: ${{ needs.check_preview.outputs.enable_build_publish == 'true' }}
-          build-args: |
-            BASE_IMAGE=${{ env.build_base_image_alpine }}
-            BUILD_DATE=${{ needs.check_preview.outputs.build_date }}
-            IMAGE_VERSION=${{ needs.check_preview.outputs.release_version }}
-            IMAGE_TYPE=preview-alpine
-            TACHIDESK_GIT_COMMIT=${{ needs.check_preview.outputs.release_commit }}
-            TACHIDESK_RELEASE_TAG=${{ needs.check_preview.outputs.release_tag }}
-            TACHIDESK_RELEASE_DOWNLOAD_URL=${{ needs.check_preview.outputs.release_url }}
-            TACHIDESK_FILENAME=${{ needs.check_preview.outputs.release_filename }}
-            STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
-            TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_preview.outputs.tachidesk_docker_git_commit }}
-            IMAGE_OWNER=${{ needs.check_preview.outputs.repository_owner_lower }}          
-            JAVA_VERSION=${{  env.java_11_version }}  
-          tags: |
-            ghcr.io/${{ needs.check_preview.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:preview-java11
+            ghcr.io/${{ needs.check_preview.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:preview-alpine
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
