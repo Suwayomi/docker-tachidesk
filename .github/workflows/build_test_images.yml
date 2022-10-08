@@ -18,7 +18,7 @@ env:
   build_base_image_temurin: 'eclipse-temurin:11-jre-jammy'
   build_base_image_temurin_platform: 'linux/amd64'
   build_base_image_alpine: 'alpine:3.16'
-  build_base_image_alpine_platform_testing: 'linux/amd64'
+  build_base_image_alpine_platform: 'linux/amd64'
   startup_script_url: 'https://raw.githubusercontent.com/${{ github.repository }}/main/scripts/startup_script.sh'
   tachidesk_webui_stable_url: 'https://api.github.com/repos/suwayomi/Tachidesk-Server/releases/latest'
   
