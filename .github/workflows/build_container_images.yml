@@ -342,8 +342,10 @@ jobs:
             IMAGE_OWNER=${{ needs.check_stable.outputs.repository_owner_lower }}
           tags: |
             ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:latest
+            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:stable
             ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:${{ needs.check_stable.outputs.release_tag }}
             ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:latest-ubuntu
+            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:stable-ubuntu
             ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:${{ needs.check_stable.outputs.release_tag }}-ubuntu
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
@@ -369,6 +371,7 @@ jobs:
             IMAGE_OWNER=${{ needs.check_stable.outputs.repository_owner_lower }}
           tags: |
             ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:latest-alpine
+            ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:stable-alpine
             ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:${{ needs.check_stable.outputs.release_tag }}-alpine
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
