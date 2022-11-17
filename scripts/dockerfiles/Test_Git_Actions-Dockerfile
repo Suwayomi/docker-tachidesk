@@ -18,7 +18,7 @@ RUN if echo "$BASE_IMAGE" | grep -q "openjdk"; then useradd -ms /bin/sh suwayomi
         if echo "$BASE_IMAGE" | grep -q "alpine"; then \
             apk --update add curl tzdata && addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi; \
         else \
-            useradd -ms /bin/sh suwayomi; fi; \
+            groupadd -g 1000 suwayomi && adduser --gecos "" --disabled-password suwayomi --uid 1000 --gid 1000; fi; \
     elif echo "$BASE_IMAGE" | grep -q "alpine"; then apk --update add curl openjdk8-jre-base tzdata && addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi; \
     else echo "wrong base image"; \
     fi
