@@ -1,6 +1,6 @@
 FROM eclipse-temurin:11-jre-focal
 
-RUN groupadd -g 1000 suwayomi && adduser --gecos "" --disabled-password suwayomi --uid 1000 --gid 1000;
+RUN groupadd --gid 1000 suwayomi && useradd  --uid 1000 --gid suwayomi --no-log-init suwayomi;
 
 RUN mkdir -p /home/suwayomi && chown -R suwayomi:suwayomi /home/suwayomi
 
