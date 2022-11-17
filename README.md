@@ -23,6 +23,23 @@ Log file location - /home/suwayomi/.local/share/Tachidesk/logfile.log
 # Docker compose
 Use the template compose.yml in this repo for creating and starting tachidesk docker container.  
 
+# Docker tags
+
+Recommended tags (ubuntu java11):
+Stable: `ghcr.io/suwayomi/tachidesk:stable`
+Preview: `ghcr.io/suwayomi/tachidesk:preview`
+Latest: `ghcr.io/suwayomi/tachidesk:latest`
+
+Legacy tags, should only be used as required (alpine java 8):
+Stable: `ghcr.io/suwayomi/tachidesk:stable-alpine`
+Preview: `ghcr.io/suwayomi/tachidesk:preview-alpine`
+Latest: `ghcr.io/suwayomi/tachidesk:latest-alpine`
+
+Explicit Ubuntu tags (ubuntu java 11) :
+Stable: `ghcr.io/suwayomi/tachidesk:stable-ubuntu`
+Preview: `ghcr.io/suwayomi/tachidesk:preview-ubuntu`
+Latest: `ghcr.io/suwayomi/tachidesk:latest-ubuntu`
+
 # Docker commands
 
 Expose to localhost ip
