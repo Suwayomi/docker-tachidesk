@@ -52,84 +52,84 @@ jobs:
             if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then           
                 if [[ "${{ github.event.inputs.tachidesk_release_type }}" == "stable" ]]; then 
                     if [[ "${{ github.actor }}"  == "AriaMoradi" ]]; then         
-                        echo "::set-output name=run_check_stable::true"
-                        echo "::set-output name=run_build_stable::true"   
-                        echo "::set-output name=enable_build_publish::true"
-                        echo "::set-output name=enable_discord_hook::true"
+                        echo "run_check_stable=true" >> $GITHUB_OUTPUT
+                        echo "run_build_stable=true" >> $GITHUB_OUTPUT  
+                        echo "enable_build_publish=true" >> $GITHUB_OUTPUT
+                        echo "enable_discord_hook=true" >> $GITHUB_OUTPUT
                     elif [[ "${{ github.actor }}"  == "arbuilder" && "${{ github.repository_owner }}" == "arbuilder" ]]; then
-                        echo "::set-output name=run_check_stable::true"
-                        echo "::set-output name=run_build_stable::true"   
-                        echo "::set-output name=enable_build_publish::true"
-                        echo "::set-output name=enable_discord_hook::true"
+                        echo "run_check_stable=true" >> $GITHUB_OUTPUT
+                        echo "run_build_stable=true" >> $GITHUB_OUTPUT
+                        echo "enable_build_publish=true" >> $GITHUB_OUTPUT
+                        echo "enable_discord_hook=true" >> $GITHUB_OUTPUT
                     elif [[ "${{ github.actor }}"  == "arbuilder" && "${{ github.repository_owner }}" == "Suwayomi" && "${{ github.event.inputs.publish_images_manually }}" == "yes"  ]]; then
-                        echo "::set-output name=run_check_stable::true"
-                        echo "::set-output name=run_build_stable::true"   
-                        echo "::set-output name=enable_build_publish::true"
-                        echo "::set-output name=enable_discord_hook::true"
+                        echo "run_check_stable=true" >> $GITHUB_OUTPUT
+                        echo "run_build_stable=true" >> $GITHUB_OUTPUT   
+                        echo "enable_build_publish=true" >> $GITHUB_OUTPUT
+                        echo "enable_discord_hook=true" >> $GITHUB_OUTPUT
                     elif [[ "${{ github.actor }}"  == "arbuilder" && "${{ github.repository_owner }}" == "Suwayomi" && "${{ github.event.inputs.publish_images_manually }}" == "no" ]]; then
-                        echo "::set-output name=run_check_stable::true"
-                        echo "::set-output name=run_build_stable::true"   
-                        echo "::set-output name=enable_build_publish::false"
-                        echo "::set-output name=enable_discord_hook::false"
+                        echo "run_check_stable=true" >> $GITHUB_OUTPUT
+                        echo "run_build_stable=true" >> $GITHUB_OUTPUT   
+                        echo "enable_build_publish=false" >> $GITHUB_OUTPUT
+                        echo "enable_discord_hook=false" >> $GITHUB_OUTPUT
                     elif [[ "${{ github.actor }}"  != "arbuilder" && "${{ github.event.inputs.publish_images_manually }}" == "yes" ]]; then
-                        echo "::set-output name=run_check_stable::true"
-                        echo "::set-output name=run_build_stable::true"   
-                        echo "::set-output name=enable_build_publish::true"
-                        echo "::set-output name=enable_discord_hook::false"
+                        echo "run_check_stable=true" >> $GITHUB_OUTPUT
+                        echo "run_build_stable=true" >> $GITHUB_OUTPUT   
+                        echo "enable_build_publish=true" >> $GITHUB_OUTPUT
+                        echo "enable_discord_hook=false" >> $GITHUB_OUTPUT
                     else
-                        echo "::set-output name=run_check_stable::false"
-                        echo "::set-output name=run_build_stable::false"   
-                        echo "::set-output name=enable_build_publish::false"
-                        echo "::set-output name=enable_discord_hook::false"
+                        echo "run_check_stable=false" >> $GITHUB_OUTPUT
+                        echo "run_build_stable=false" >> $GITHUB_OUTPUT   
+                        echo "enable_build_publish=false" >> $GITHUB_OUTPUT
+                        echo "enable_discord_hook=false" >> $GITHUB_OUTPUT
                     fi
                 fi
                 if [[ "${{ github.event.inputs.tachidesk_release_type }}" == "preview" ]]; then
                     if [[ "${{ github.actor }}"  == "AriaMoradi" ]]; then         
-                        echo "::set-output name=run_check_preview::true"
-                        echo "::set-output name=run_build_preview::true"   
-                        echo "::set-output name=enable_build_publish::true"
-                        echo "::set-output name=enable_discord_hook::true"
+                        echo "run_check_preview=true" >> $GITHUB_OUTPUT
+                        echo "run_build_preview=true" >> $GITHUB_OUTPUT  
+                        echo "enable_build_publish=true" >> $GITHUB_OUTPUT
+                        echo "enable_discord_hook=true" >> $GITHUB_OUTPUT
                     elif [[ "${{ github.actor }}"  == "arbuilder" && "${{ github.repository_owner }}" == "arbuilder" ]]; then
-                        echo "::set-output name=run_check_preview::true"
-                        echo "::set-output name=run_build_preview::true"   
-                        echo "::set-output name=enable_build_publish::true"
-                        echo "::set-output name=enable_discord_hook::true"
+                        echo "run_check_preview=true" >> $GITHUB_OUTPUT
+                        echo "run_build_preview=true" >> $GITHUB_OUTPUT  
+                        echo "enable_build_publish=true" >> $GITHUB_OUTPUT
+                        echo "enable_discord_hook=true" >> $GITHUB_OUTPUT
                     elif [[ "${{ github.actor }}"  == "arbuilder" && "${{ github.repository_owner }}" == "Suwayomi" && "${{ github.event.inputs.publish_images_manually }}" == "yes" ]]; then
-                        echo "::set-output name=run_check_preview::true"
-                        echo "::set-output name=run_build_preview::true"   
-                        echo "::set-output name=enable_build_publish::true"
-                        echo "::set-output name=enable_discord_hook::true"
+                        echo "run_check_preview=true" >> $GITHUB_OUTPUT
+                        echo "run_build_preview=true" >> $GITHUB_OUTPUT   
+                        echo "enable_build_publish=true" >> $GITHUB_OUTPUT
+                        echo "enable_discord_hook=true" >> $GITHUB_OUTPUT
                     elif [[ "${{ github.actor }}"  == "arbuilder" && "${{ github.repository_owner }}" == "Suwayomi" && "${{ github.event.inputs.publish_images_manually }}" == "no" ]]; then
-                        echo "::set-output name=run_check_preview::true"
-                        echo "::set-output name=run_build_preview::true"   
-                        echo "::set-output name=enable_build_publish::false"
-                        echo "::set-output name=enable_discord_hook::false"
+                        echo "run_check_preview=true" >> $GITHUB_OUTPUT
+                        echo "run_build_preview=true" >> $GITHUB_OUTPUT  
+                        echo "enable_build_publish=false" >> $GITHUB_OUTPUT
+                        echo "enable_discord_hook=false" >> $GITHUB_OUTPUT
                     elif [[ "${{ github.actor }}"  != "arbuilder" && "${{ github.event.inputs.publish_images_manually }}" == "yes" ]]; then
-                        echo "::set-output name=run_check_preview::true"
-                        echo "::set-output name=run_build_preview::true"   
-                        echo "::set-output name=enable_build_publish::true"
-                        echo "::set-output name=enable_discord_hook::false"
+                        echo "run_check_preview=true" >> $GITHUB_OUTPUT
+                        echo "run_build_preview=true" >> $GITHUB_OUTPUT   
+                        echo "enable_build_publish=true" >> $GITHUB_OUTPUT
+                        echo "enable_discord_hook=false" >> $GITHUB_OUTPUT
                     else
-                        echo "::set-output name=run_check_preview::false"
-                        echo "::set-output name=run_build_preview::false"   
-                        echo "::set-output name=enable_build_publish::false"
-                        echo "::set-output name=enable_discord_hook::false"
+                        echo "run_check_preview=false" >> $GITHUB_OUTPUT
+                        echo "run_build_preview=false" >> $GITHUB_OUTPUT   
+                        echo "enable_build_publish=false" >> $GITHUB_OUTPUT
+                        echo "enable_discord_hook=false" >> $GITHUB_OUTPUT
                     fi
                 fi
             elif [[ "${{ github.event_name }}" == "pull_request" || "${{ github.event_name }}" == "push" ]]; then
-                echo "::set-output name=run_check_stable::true"
-                echo "::set-output name=run_build_stable::false"                 
-                echo "::set-output name=run_check_preview::false"                
-                echo "::set-output name=run_build_preview::false"
-                echo "::set-output name=enable_build_publish::false"
-                echo "::set-output name=enable_discord_hook::false"
+                echo "run_check_stable=true" >> $GITHUB_OUTPUT
+                echo "run_build_stable=false" >> $GITHUB_OUTPUT                 
+                echo "run_check_preview=false" >> $GITHUB_OUTPUT               
+                echo "run_build_preview=false" >> $GITHUB_OUTPUT
+                echo "enable_build_publish=false" >> $GITHUB_OUTPUT
+                echo "enable_discord_hook=false" >> $GITHUB_OUTPUT
             else
-                echo "::set-output name=run_check_stable::false"
-                echo "::set-output name=run_build_stable::false" 
-                echo "::set-output name=run_check_preview::false"
-                echo "::set-output name=run_build_preview::false"   
-                echo "::set-output name=enable_build_publish::false"
-                echo "::set-output name=enable_discord_hook::false"
+                echo "run_check_stable=false" >> $GITHUB_OUTPUT
+                echo "run_build_stable=false" >> $GITHUB_OUTPUT
+                echo "run_check_preview=false" >> $GITHUB_OUTPUT
+                echo "run_build_preview=false" >> $GITHUB_OUTPUT  
+                echo "enable_build_publish=false" >> $GITHUB_OUTPUT
+                echo "enable_discord_hook=false" >> $GITHUB_OUTPUT
             fi
             
   check_stable:
@@ -176,17 +176,17 @@ jobs:
           release_commit=$(echo $release_var | cut -f2 -d"r")
           release_filename=Tachidesk-Server-${release_var}.jar
           release_version=$(echo $release_tag | cut -c2-)
-          echo "::set-output name=release_url::$release_url"
-          echo "::set-output name=release_commit::$release_commit"
-          echo "::set-output name=release_tag::$release_tag"
-          echo "::set-output name=release_filename::$release_filename"
-          echo "::set-output name=release_version::$release_version"
-          echo "::set-output name=release_var::$release_var"
+          echo "release_url=$release_url" >> $GITHUB_OUTPUT
+          echo "release_commit=$release_commit" >> $GITHUB_OUTPUT
+          echo "release_tag=$release_tag" >> $GITHUB_OUTPUT
+          echo "release_filename=$release_filename" >> $GITHUB_OUTPUT
+          echo "release_version=$release_version" >> $GITHUB_OUTPUT
+          echo "release_var=$release_var" >> $GITHUB_OUTPUT
           tachidesk_docker_git_commit=$(git rev-list --count HEAD)
-          echo "::set-output name=tachidesk_docker_git_commit::$tachidesk_docker_git_commit"
+          echo "tachidesk_docker_git_commit=$tachidesk_docker_git_commit" >> $GITHUB_OUTPUT
           build_date=$(date "+%F")
-          echo "::set-output name=build_date::$build_date"
-          echo "::set-output name=repository_owner_lower::$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')"
+          echo "build_date=$build_date" >> $GITHUB_OUTPUT
+          echo "repository_owner_lower=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
       - name: Build and save stable ubuntu
         id: docker_build_release_ubuntu
@@ -222,12 +222,12 @@ jobs:
             if [[ $val == "Tachidesk" ]]; then
                 echo ""
                 echo "Tachidesk stable ubuntu run successfully"
-                echo "::set-output name=value::true"
+                echo "value=true" >> $GITHUB_OUTPUT
                 docker stop test_image_stable
             else
                 echo ""
                 echo "Tachidesk stable ubuntu run Failed"
-                echo "::set-output name=value::false"
+                echo "value=false" >> $GITHUB_OUTPUT
                 if [[ ${{ needs.check_workflow.outputs.enable_discord_hook }} == 'true' ]]; then
                     curl \
                       -F 'payload_json={"username": "Github", "content": "<@255018340244914177>\n<@785012853178499073>\nDocker Stable Ubuntu Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
@@ -271,12 +271,12 @@ jobs:
             if [[ $val == "Tachidesk" ]]; then
                 echo ""
                 echo "Tachidesk stable alpine run successfully"
-                echo "::set-output name=value::true"
+                echo "value=true" >> $GITHUB_OUTPUT
                 docker stop test_image_stable_alpine
             else
                 echo ""
                 echo "Tachidesk stable alpine run Failed"
-                echo "::set-output name=value::false"
+                echo "value=false" >> $GITHUB_OUTPUT
                 if [[ ${{ needs.check_workflow.outputs.enable_discord_hook }} == 'true' ]]; then
                     curl \
                       -F 'payload_json={"username": "Github", "content": "<@255018340244914177>\n<@785012853178499073>\nDocker Stable Alpine Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
@@ -440,17 +440,17 @@ jobs:
           release_commit=$(echo $release_var | cut -f2 -d"r")
           release_filename=Tachidesk-Server-${release_var}.jar
           release_version=$(echo $release_tag | cut -c2-)
-          echo "::set-output name=release_url::$release_url"
-          echo "::set-output name=release_commit::$release_commit"
-          echo "::set-output name=release_tag::$release_tag"
-          echo "::set-output name=release_filename::$release_filename"
-          echo "::set-output name=release_version::$release_version"
-          echo "::set-output name=release_var::$release_var"
+          echo "release_url=$release_url" >> $GITHUB_OUTPUT
+          echo "release_commit=$release_commit" >> $GITHUB_OUTPUT
+          echo "release_tag=$release_tag" >> $GITHUB_OUTPUT
+          echo "release_filename=$release_filename" >> $GITHUB_OUTPUT
+          echo "release_version=$release_version" >> $GITHUB_OUTPUT
+          echo "release_var=$release_var" >> $GITHUB_OUTPUT
           tachidesk_docker_git_commit=$(git rev-list --count HEAD)
-          echo "::set-output name=tachidesk_docker_git_commit::$tachidesk_docker_git_commit"
+          echo "tachidesk_docker_git_commit=$tachidesk_docker_git_commit" >> $GITHUB_OUTPUT
           build_date=$(date "+%F")
-          echo "::set-output name=build_date::$build_date"
-          echo "::set-output name=repository_owner_lower::$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')"          
+          echo "build_date=$build_date" >> $GITHUB_OUTPUT
+          echo "repository_owner_lower=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT         
           
       - name: Build and save preview ubuntu
         id: docker_build_release_ubuntu
@@ -486,13 +486,13 @@ jobs:
             if [[ $val == "Tachidesk" ]]; then
                 echo ""
                 echo "Tachidesk preview run successfully"
-                echo "::set-output name=value::true"
+                echo "value=true" >> $GITHUB_OUTPUT
                 docker stop test_image_preview
                 run_check="true"
             else
                 echo ""
                 echo "Tachidesk preview run Failed"
-                echo "::set-output name=value::false"
+                echo "value=false" >> $GITHUB_OUTPUT
                 if [[ ${{ needs.check_workflow.outputs.enable_discord_hook }} == 'true' ]]; then                
                     curl \
                       -F 'payload_json={"username": "Github", "content": "<@255018340244914177>\n<@785012853178499073>\nDocker Preview Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
@@ -538,13 +538,13 @@ jobs:
             if [[ $val == "Tachidesk" ]]; then
                 echo ""
                 echo "Tachidesk preview alpine run successfully"
-                echo "::set-output name=value::true"
+                echo "value=true" >> $GITHUB_OUTPUT
                 docker stop test_image_preview_alpine
                 run_check="true"
             else
                 echo ""
                 echo "Tachidesk preview alpine run Failed"
-                echo "::set-output name=value::false"
+                echo "value=false" >> $GITHUB_OUTPUT
                 if [[ ${{ needs.check_workflow.outputs.enable_discord_hook }} == 'true' ]]; then                
                     curl \
                       -F 'payload_json={"username": "Github", "content": "<@255018340244914177>\n<@785012853178499073>\nDocker Preview Alpine Image Dry Run Failed Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
