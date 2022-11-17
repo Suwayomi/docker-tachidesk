@@ -12,7 +12,11 @@ Dockerfile - https://github.com/suwayomi/docker-tachidesk
 
 _**Tachidesk data location - /home/suwayomi/.local/share/Tachidesk**_
 
-Docker images are mutli-arch (linux/386, linux/amd64, linux/arm/v6, linux/arm/v7, linux/arm64, linux/ppc64le, linux/s390x) and has very small size based on alpine linux.
+Docker images are mutli-arch (linux/amd64, linux/arm/v7, linux/arm64, linux/ppc64le, linux/s390x) and has small size based on Ubuntu linux.
+
+Legacy alpine images using the `-alpine` suffix are provided for as-needed use-cases, such as:
+- Support for linux platforms linux/386 and linux/arm/v6
+- Those that need a smaller image size
 
 Log file location - /home/suwayomi/.local/share/Tachidesk/logfile.log
 
