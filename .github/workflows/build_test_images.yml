@@ -59,17 +59,17 @@ jobs:
           release_commit=$(echo $release_var | cut -f2 -d"r")
           release_filename=Tachidesk-Server-${release_var}.jar
           release_version=$(echo $release_tag | cut -c2-)
-          echo "::set-output name=release_url::$release_url"
-          echo "::set-output name=release_commit::$release_commit"
-          echo "::set-output name=release_tag::$release_tag"
-          echo "::set-output name=release_filename::$release_filename"
-          echo "::set-output name=release_version::$release_version"
-          echo "::set-output name=release_var::$release_var"
+          echo "release_url=$release_url" >> $GITHUB_OUTPUT
+          echo "release_commit=$release_commit" >> $GITHUB_OUTPUT
+          echo "release_tag=$release_tag" >> $GITHUB_OUTPUT
+          echo "release_filename=$release_filename" >> $GITHUB_OUTPUT
+          echo "release_version=$release_version" >> $GITHUB_OUTPUT
+          echo "release_var=$release_var" >> $GITHUB_OUTPUT
           tachidesk_docker_git_commit=$(git rev-list --count HEAD)
-          echo "::set-output name=tachidesk_docker_git_commit::$tachidesk_docker_git_commit"
+          echo "tachidesk_docker_git_commit=$tachidesk_docker_git_commit" >> $GITHUB_OUTPUT
           build_date=$(date "+%F")
-          echo "::set-output name=build_date::$build_date"
-          echo "::set-output name=repository_owner_lower::$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')"
+          echo "build_date=$build_date" >> $GITHUB_OUTPUT
+          echo "repository_owner_lower=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
           
       - name: Build and push stable ubuntu
         id: docker_build_release_ubuntu
