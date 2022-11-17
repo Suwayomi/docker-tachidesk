@@ -1,8 +1,6 @@
-FROM alpine:latest
+FROM eclipse-temurin:11-jre-focal
 
-RUN apk --update add curl openjdk8-jre-base tzdata
-
-RUN addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi
+RUN groupadd -g 1000 suwayomi && adduser --gecos "" --disabled-password suwayomi --uid 1000 --gid 1000;
 
 RUN mkdir -p /home/suwayomi && chown -R suwayomi:suwayomi /home/suwayomi
 
