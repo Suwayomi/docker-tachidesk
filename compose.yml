@@ -10,8 +10,8 @@ services:
       custom_network1:
         ipv4_address: 172.22.2.11
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=1000 # ( dont change, require uid to be 1000 )
+      - PGID=1000 # ( dont change, require gid to be 1000 )
       - TZ=< change it to your timezone > # Use TZ database name from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       - LOGGING=file
     volumes:
