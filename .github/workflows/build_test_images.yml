@@ -10,6 +10,8 @@ on:
       - '**/Git_Actions-Dockerfile'    
   pull_request:
     branches: [ main ]
+  schedule:
+    - cron: '10 5 * * 2,5'
   workflow_dispatch:
 
 
