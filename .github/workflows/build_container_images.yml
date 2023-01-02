@@ -30,6 +30,12 @@ env:
   build_base_image_alpine_platform: 'linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x'
   build_base_image_alpine_platform_testing: 'linux/amd64'
   startup_script_url: 'https://raw.githubusercontent.com/${{ github.repository }}/main/scripts/startup_script.sh'
+  startup_script_url_alpine: 'https://raw.githubusercontent.com/${{ github.repository }}/main/scripts/startup_script_alpine.sh'
+  supervisord_url: 'https://raw.githubusercontent.com/${{ github.repository }}/main/supervisord.conf'
+  supervisord_tachidesk_conf_url: 'https://raw.githubusercontent.com/${{ github.repository }}/main/conf.d/tachidesk.conf'
+  supervisord_websockify_conf_url: 'https://raw.githubusercontent.com/${{ github.repository }}/main/conf.d/websockify.conf'
+  supervisord_x11vnc_conf_url: 'https://raw.githubusercontent.com/${{ github.repository }}/main/conf.d/x11vnc.conf'
+  supervisord_xvfb_conf_url: 'https://raw.githubusercontent.com/${{ github.repository }}/main/conf.d/xvfb.conf'
   tachidesk_webui_stable_url: 'https://api.github.com/repos/suwayomi/Tachidesk-Server/releases/latest'
   tachidesk_webui_preview_url: 'https://api.github.com/repos/suwayomi/Tachidesk-Server-preview/releases/latest'
   
@@ -197,14 +203,20 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ env.build_base_image_temurin }}
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
+            PLATFORM=ubuntu
             IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
-            IMAGE_TYPE=stable-ubuntu
+            IMAGE_TYPE=stable
             TACHIDESK_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.release_commit }}
             TACHIDESK_RELEASE_TAG=${{ steps.get_latest_release_metadata.outputs.release_tag }}
             TACHIDESK_RELEASE_DOWNLOAD_URL=${{ steps.get_latest_release_metadata.outputs.release_url }}
             TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
             STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
+            SUPERVISORD_URL=${{ env.supervisord_url }}
+            SUPERVISORD_TACHIDESK_URL=${{ env.supervisord_tachidesk_conf_url }}
+            SUPERVISORD_WEBSOCKIFY_URL=${{ env.supervisord_websockify_conf_url }}
+            SUPERVISORD_X11VNC_URL=${{ env.supervisord_x11vnc_conf_url }}
+            SUPERVISORD_XVFB_URL=${{ env.supervisord_xvfb_conf_url }}
           tags: |
             test-image:stable
           outputs: type=docker,dest=/tmp/test_image_stable.tar
@@ -246,14 +258,20 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ env.build_base_image_alpine }}
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
+            PLATFORM=alpine
             IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
-            IMAGE_TYPE=stable-alpine
+            IMAGE_TYPE=stable
             TACHIDESK_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.release_commit }}
             TACHIDESK_RELEASE_TAG=${{ steps.get_latest_release_metadata.outputs.release_tag }}
             TACHIDESK_RELEASE_DOWNLOAD_URL=${{ steps.get_latest_release_metadata.outputs.release_url }}
             TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
-            STARTUP_SCRIPT_URL=${{  env.startup_script_url }}
+            STARTUP_SCRIPT_URL=${{  env.startup_script_url_alpine }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
+            SUPERVISORD_URL=${{ env.supervisord_url }}
+            SUPERVISORD_TACHIDESK_URL=${{ env.supervisord_tachidesk_conf_url }}
+            SUPERVISORD_WEBSOCKIFY_URL=${{ env.supervisord_websockify_conf_url }}
+            SUPERVISORD_X11VNC_URL=${{ env.supervisord_x11vnc_conf_url }}
+            SUPERVISORD_XVFB_URL=${{ env.supervisord_xvfb_conf_url }}
           tags: |
             test-image:stable-alpine
           outputs: type=docker,dest=/tmp/test_image_stable_alpine.tar
@@ -331,8 +349,9 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ env.build_base_image_temurin }}
             BUILD_DATE=${{ needs.check_stable.outputs.build_date }}
+            PLATFORM=ubuntu
             IMAGE_VERSION=${{ needs.check_stable.outputs.release_version }}
-            IMAGE_TYPE=stable-ubuntu
+            IMAGE_TYPE=stable
             TACHIDESK_GIT_COMMIT=${{ needs.check_stable.outputs.release_commit }}
             TACHIDESK_RELEASE_TAG=${{ needs.check_stable.outputs.release_tag }}
             TACHIDESK_RELEASE_DOWNLOAD_URL=${{ needs.check_stable.outputs.release_url }}
@@ -340,6 +359,11 @@ jobs:
             STARTUP_SCRIPT_URL=${{  env.startup_script_url }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_stable.outputs.tachidesk_docker_git_commit }}
             IMAGE_OWNER=${{ needs.check_stable.outputs.repository_owner_lower }}
+            SUPERVISORD_URL=${{ env.supervisord_url }}
+            SUPERVISORD_TACHIDESK_URL=${{ env.supervisord_tachidesk_conf_url }}
+            SUPERVISORD_WEBSOCKIFY_URL=${{ env.supervisord_websockify_conf_url }}
+            SUPERVISORD_X11VNC_URL=${{ env.supervisord_x11vnc_conf_url }}
+            SUPERVISORD_XVFB_URL=${{ env.supervisord_xvfb_conf_url }}
           tags: |
             ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:latest
             ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:stable
@@ -360,15 +384,21 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ env.build_base_image_alpine }}
             BUILD_DATE=${{ needs.check_stable.outputs.build_date }}
+            PLATFORM=alpine
             IMAGE_VERSION=${{ needs.check_stable.outputs.release_version }}
-            IMAGE_TYPE=stable-alpine
+            IMAGE_TYPE=stable
             TACHIDESK_GIT_COMMIT=${{ needs.check_stable.outputs.release_commit }}
             TACHIDESK_RELEASE_TAG=${{ needs.check_stable.outputs.release_tag }}
             TACHIDESK_RELEASE_DOWNLOAD_URL=${{ needs.check_stable.outputs.release_url }}
             TACHIDESK_FILENAME=${{ needs.check_stable.outputs.release_filename }}
-            STARTUP_SCRIPT_URL=${{  env.startup_script_url }}
+            STARTUP_SCRIPT_URL=${{  env.startup_script_url_alpine }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_stable.outputs.tachidesk_docker_git_commit }}
             IMAGE_OWNER=${{ needs.check_stable.outputs.repository_owner_lower }}
+            SUPERVISORD_URL=${{ env.supervisord_url }}
+            SUPERVISORD_TACHIDESK_URL=${{ env.supervisord_tachidesk_conf_url }}
+            SUPERVISORD_WEBSOCKIFY_URL=${{ env.supervisord_websockify_conf_url }}
+            SUPERVISORD_X11VNC_URL=${{ env.supervisord_x11vnc_conf_url }}
+            SUPERVISORD_XVFB_URL=${{ env.supervisord_xvfb_conf_url }}
           tags: |
             ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:latest-alpine
             ghcr.io/${{ needs.check_stable.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:stable-alpine
@@ -464,14 +494,20 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ env.build_base_image_temurin }}
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
+            PLATFORM=ubuntu
             IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
-            IMAGE_TYPE=preview-ubuntu
+            IMAGE_TYPE=preview
             TACHIDESK_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.release_commit }}
             TACHIDESK_RELEASE_TAG=${{ steps.get_latest_release_metadata.outputs.release_tag }}
             TACHIDESK_RELEASE_DOWNLOAD_URL=${{ steps.get_latest_release_metadata.outputs.release_url }}
             TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
             STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
+            SUPERVISORD_URL=${{ env.supervisord_url }}
+            SUPERVISORD_TACHIDESK_URL=${{ env.supervisord_tachidesk_conf_url }}
+            SUPERVISORD_WEBSOCKIFY_URL=${{ env.supervisord_websockify_conf_url }}
+            SUPERVISORD_X11VNC_URL=${{ env.supervisord_x11vnc_conf_url }}
+            SUPERVISORD_XVFB_URL=${{ env.supervisord_xvfb_conf_url }}
           tags: |
             test-image:preview
           outputs: type=docker,dest=/tmp/test_image_preview.tar
@@ -515,14 +551,20 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ env.build_base_image_alpine }}
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
+            PLATFORM=alpine
             IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
-            IMAGE_TYPE=preview-alpine
+            IMAGE_TYPE=preview
             TACHIDESK_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.release_commit }}
             TACHIDESK_RELEASE_TAG=${{ steps.get_latest_release_metadata.outputs.release_tag }}
             TACHIDESK_RELEASE_DOWNLOAD_URL=${{ steps.get_latest_release_metadata.outputs.release_url }}
             TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
-            STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
+            STARTUP_SCRIPT_URL=${{ env.startup_script_url_alpine }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
+            SUPERVISORD_URL=${{ env.supervisord_url }}
+            SUPERVISORD_TACHIDESK_URL=${{ env.supervisord_tachidesk_conf_url }}
+            SUPERVISORD_WEBSOCKIFY_URL=${{ env.supervisord_websockify_conf_url }}
+            SUPERVISORD_X11VNC_URL=${{ env.supervisord_x11vnc_conf_url }}
+            SUPERVISORD_XVFB_URL=${{ env.supervisord_xvfb_conf_url }}
           tags: |
             test-image:preview-alpine
           outputs: type=docker,dest=/tmp/test_image_preview_alpine.tar
@@ -602,15 +644,21 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ env.build_base_image_temurin }}
             BUILD_DATE=${{ needs.check_preview.outputs.build_date }}
+            PLATFORM=ubuntu
             IMAGE_VERSION=${{ needs.check_preview.outputs.release_version }}
-            IMAGE_TYPE=preview-ubuntu
+            IMAGE_TYPE=preview
             TACHIDESK_GIT_COMMIT=${{ needs.check_preview.outputs.release_commit }}
             TACHIDESK_RELEASE_TAG=${{ needs.check_preview.outputs.release_tag }}
             TACHIDESK_RELEASE_DOWNLOAD_URL=${{ needs.check_preview.outputs.release_url }}
             TACHIDESK_FILENAME=${{ needs.check_preview.outputs.release_filename }}
             STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_preview.outputs.tachidesk_docker_git_commit }}
-            IMAGE_OWNER=${{ needs.check_preview.outputs.repository_owner_lower }}          
+            IMAGE_OWNER=${{ needs.check_preview.outputs.repository_owner_lower }}
+            SUPERVISORD_URL=${{ env.supervisord_url }}
+            SUPERVISORD_TACHIDESK_URL=${{ env.supervisord_tachidesk_conf_url }}
+            SUPERVISORD_WEBSOCKIFY_URL=${{ env.supervisord_websockify_conf_url }}
+            SUPERVISORD_X11VNC_URL=${{ env.supervisord_x11vnc_conf_url }}
+            SUPERVISORD_XVFB_URL=${{ env.supervisord_xvfb_conf_url }}
           tags: |
             ghcr.io/${{ needs.check_preview.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:preview
             ghcr.io/${{ needs.check_preview.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:preview-ubuntu
@@ -627,15 +675,21 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ env.build_base_image_alpine }}
             BUILD_DATE=${{ needs.check_preview.outputs.build_date }}
+            PLATFORM=alpine
             IMAGE_VERSION=${{ needs.check_preview.outputs.release_version }}
-            IMAGE_TYPE=preview-alpine
+            IMAGE_TYPE=preview
             TACHIDESK_GIT_COMMIT=${{ needs.check_preview.outputs.release_commit }}
             TACHIDESK_RELEASE_TAG=${{ needs.check_preview.outputs.release_tag }}
             TACHIDESK_RELEASE_DOWNLOAD_URL=${{ needs.check_preview.outputs.release_url }}
             TACHIDESK_FILENAME=${{ needs.check_preview.outputs.release_filename }}
-            STARTUP_SCRIPT_URL=${{ env.startup_script_url }}
+            STARTUP_SCRIPT_URL=${{ env.startup_script_url_alpine }}
             TACHIDESK_DOCKER_GIT_COMMIT=${{ needs.check_preview.outputs.tachidesk_docker_git_commit }}
-            IMAGE_OWNER=${{ needs.check_preview.outputs.repository_owner_lower }}          
+            IMAGE_OWNER=${{ needs.check_preview.outputs.repository_owner_lower }}
+            SUPERVISORD_URL=${{ env.supervisord_url }}
+            SUPERVISORD_TACHIDESK_URL=${{ env.supervisord_tachidesk_conf_url }}
+            SUPERVISORD_WEBSOCKIFY_URL=${{ env.supervisord_websockify_conf_url }}
+            SUPERVISORD_X11VNC_URL=${{ env.supervisord_x11vnc_conf_url }}
+            SUPERVISORD_XVFB_URL=${{ env.supervisord_xvfb_conf_url }}
           tags: |
             ghcr.io/${{ needs.check_preview.outputs.repository_owner_lower }}/${{ env.build_repo_docker }}:preview-alpine
           cache-from: type=local,src=/tmp/.buildx-cache

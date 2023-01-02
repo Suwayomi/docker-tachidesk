@@ -1,9 +1,7 @@
 ARG BASE_IMAGE=none
-
-FROM $BASE_IMAGE
-
 ARG BASE_IMAGE
 ARG BUILD_DATE
+ARG PLATFORM
 ARG IMAGE_VERSION
 ARG IMAGE_TYPE
 ARG TACHIDESK_GIT_COMMIT
@@ -12,16 +10,21 @@ ARG TACHIDESK_FILENAME
 ARG TACHIDESK_RELEASE_DOWNLOAD_URL
 ARG TACHIDESK_DOCKER_GIT_COMMIT
 ARG STARTUP_SCRIPT_URL
+ARG SUPERVISORD_URL
+ARG SUPERVISORD_TACHIDESK_URL
+ARG SUPERVISORD_WEBSOCKIFY_URL
+ARG SUPERVISORD_X11VNC_URL
+ARG SUPERVISORD_XVFB_URL
 
-RUN if echo "$BASE_IMAGE" | grep -q "openjdk"; then useradd -ms /bin/sh suwayomi; \
-    elif echo "$BASE_IMAGE" | grep -q "eclipse-temurin"; then \
-        if echo "$BASE_IMAGE" | grep -q "alpine"; then \
-            apk --update add curl tzdata && addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi; \
-        else \
-            groupadd --gid 1000 suwayomi && useradd  --uid 1000 --gid suwayomi --no-log-init suwayomi; fi; \
-    elif echo "$BASE_IMAGE" | grep -q "alpine"; then apk --update add curl openjdk8-jre-base tzdata && addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi; \
-    else echo "wrong base image"; \
-    fi
+FROM $BASE_IMAGE as base
+
+FROM base as branch-base-alpine
+RUN apk --update add curl openjdk8-jre-base tzdata && addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi;
+
+FROM base as branch-base-ubuntu
+RUN groupadd --gid 1000 suwayomi && useradd  --uid 1000 --gid suwayomi --no-log-init suwayomi;
+
+FROM branch-base-${PLATFORM} AS home
 
 LABEL maintainer="suwayomi" \
       org.opencontainers.image.title="Tachidesk Docker" \
@@ -34,6 +37,7 @@ LABEL maintainer="suwayomi" \
       org.opencontainers.image.created=$BUILD_DATE \	  
       org.opencontainers.image.version=$IMAGE_VERSION \
       image_type=$IMAGE_TYPE \
+      platform=$PLATFORM \
       "tachidesk.git_commit"=$TACHIDESK_GIT_COMMIT \
       "tachidesk.release_tag"=$TACHIDESK_RELEASE_TAG \
       "tachidesk.filename"=$TACHIDESK_FILENAME \
@@ -48,6 +52,14 @@ RUN USER=suwayomi && \
     mkdir -p /etc/fixuid && \
     printf "user: $USER\ngroup: $GROUP\n" > /etc/fixuid/config.yml
 
+FROM home as branch-home-alpine
+
+FROM home as branch-home-ubuntu
+RUN mkdir -p /Xauthority && chown -R suwayomi:suwayomi /Xauthority
+VOLUME /Xauthority
+
+FROM branch-home-${PLATFORM} AS display
+
 USER suwayomi:suwayomi
 WORKDIR /home/suwayomi
 RUN echo $TACHIDESK_FILENAME
@@ -55,6 +67,24 @@ RUN curl -s --create-dirs -L $TACHIDESK_RELEASE_DOWNLOAD_URL -o /home/suwayomi/s
 RUN echo $TACHIDESK_DOCKER_GIT_COMMIT
 RUN curl -s --create-dirs -L $STARTUP_SCRIPT_URL -o /home/suwayomi/startup/startup_script.sh
 
+FROM display as branch-display-alpine
 EXPOSE 4567
+
+FROM display as branch-display-ubuntu
+RUN curl -s --create-dirs -L $SUPERVISORD_URL -o /home/suwayomi/startup/supervisord.conf
+RUN curl -s --create-dirs -L $SUPERVISORD_TACHIDESK_URL -o /home/suwayomi/startup/conf.d/tachidesk.conf
+RUN curl -s --create-dirs -L $SUPERVISORD_WEBSOCKIFY_URL -o /home/suwayomi/startup/conf.d/websockify.conf
+RUN curl -s --create-dirs -L $SUPERVISORD_X11VNC_URL -o /home/suwayomi/startup/conf.d/x11vnc.conf
+RUN curl -s --create-dirs -L $SUPERVISORD_XVFB_URL -o /home/suwayomi/startup/conf.d/xvfb.conf
+# start x11vnc and expose its port
+ENV DISPLAY :0.0
+# vnv server
+EXPOSE 5900
+# novnc
+EXPOSE 5800
+# Tachidesk
+EXPOSE 4567
+
+FROM branch-display-${PLATFORM} AS final
 ENTRYPOINT ["fixuid"]
 CMD ["/bin/sh", "/home/suwayomi/startup/startup_script.sh"]
