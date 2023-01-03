@@ -82,5 +82,4 @@ EXPOSE 4567
 
 FROM branch-display-${PLATFORM} AS final
 
-EXPOSE 4567
 CMD ["/bin/sh", "/home/suwayomi/startup/startup_script.sh"]
