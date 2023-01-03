@@ -26,7 +26,6 @@ FROM base as branch-base-ubuntu
 RUN groupadd --gid 1000 suwayomi && useradd  --uid 1000 --gid suwayomi --no-log-init suwayomi;
 
 FROM branch-base-${PLATFORM} AS home
-ARG PLATFORM
 
 LABEL maintainer="suwayomi" \
       org.opencontainers.image.title="Tachidesk Docker" \
@@ -55,7 +54,6 @@ RUN mkdir -p /Xauthority && chown -R suwayomi:suwayomi /Xauthority
 VOLUME /Xauthority
 
 FROM branch-home-${PLATFORM} AS display
-ARG PLATFORM
 
 USER suwayomi:suwayomi
 WORKDIR /home/suwayomi
