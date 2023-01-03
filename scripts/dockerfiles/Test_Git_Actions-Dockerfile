@@ -1,4 +1,7 @@
 ARG BASE_IMAGE=none
+
+FROM $BASE_IMAGE as base
+
 ARG BASE_IMAGE
 ARG BUILD_DATE
 ARG PLATFORM
@@ -15,8 +18,6 @@ ARG SUPERVISORD_TACHIDESK_URL
 ARG SUPERVISORD_WEBSOCKIFY_URL
 ARG SUPERVISORD_X11VNC_URL
 ARG SUPERVISORD_XVFB_URL
-
-FROM $BASE_IMAGE as base
 
 FROM base as branch-base-alpine
 RUN apk --update add curl openjdk8-jre-base tzdata && addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi;
