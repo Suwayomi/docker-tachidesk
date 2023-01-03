@@ -5,9 +5,10 @@ if [ ! -f /home/suwayomi/.local/share/Tachidesk/docker_touchfile ]; then
 fi
 
 if [ -z "$VNC_PASSWORD" ]; then
-	echo >&2 'warn: No password for VNC connection set, defaulting to "password".'
-	echo >&2 '  Did you forget to add -e VNC_PASSWORD=... ?'
-	export VNC_PASSWORD='password'
+	echo >&2 'warn: VNC_PASSWORD for VNC connection is not set.'
+	export LAUNCH_VNC_CMD=''
+else 
+	export LAUNCH_VNC_CMD="-passwd $VNC_PASSWORD"
 fi
 
 if [ -z "$XFB_SCREEN" ]; then
