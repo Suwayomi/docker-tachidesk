@@ -22,14 +22,14 @@ env:
   build_base_image_temurin_platform: 'linux/amd64'
   build_base_image_alpine: 'alpine:3.16'
   build_base_image_alpine_platform: 'linux/amd64'
-  startup_script_url: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ branch }}/scripts/startup_script.sh'
-  startup_script_url_alpine: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ branch }}/scripts/startup_script_alpine.sh'
+  startup_script_url: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ env.branch }}/scripts/startup_script.sh'
+  startup_script_url_alpine: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ env.branch }}/scripts/startup_script_alpine.sh'
   tachidesk_webui_stable_url: 'https://api.github.com/repos/suwayomi/Tachidesk-Server/releases/latest'
-  supervisord_url: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ branch }}/supervisord.conf'
-  supervisord_tachidesk_conf_url: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ branch }}/conf.d/tachidesk.conf'
-  supervisord_websockify_conf_url: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ branch }}/conf.d/websockify.conf'
-  supervisord_x11vnc_conf_url: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ branch }}/conf.d/x11vnc.conf'
-  supervisord_xvfb_conf_url: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ branch }}/conf.d/xvfb.conf'
+  supervisord_url: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ env.branch }}/supervisord.conf'
+  supervisord_tachidesk_conf_url: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ env.branch }}/conf.d/tachidesk.conf'
+  supervisord_websockify_conf_url: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ env.branch }}/conf.d/websockify.conf'
+  supervisord_x11vnc_conf_url: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ env.branch }}/conf.d/x11vnc.conf'
+  supervisord_xvfb_conf_url: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ env.branch }}/conf.d/xvfb.conf'
   
 jobs:           
           
