@@ -1,4 +1,5 @@
 ARG BASE_IMAGE=none
+ARG PLATFORM
 
 FROM $BASE_IMAGE as base
 
