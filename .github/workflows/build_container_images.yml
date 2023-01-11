@@ -229,7 +229,6 @@ jobs:
             chmod -R 777 /home/runner/work/_temp/tachidesk
             docker run --rm -d -p 127.0.0.1:4568:4567 -v /home/runner/work/_temp/tachidesk:/home/suwayomi/.local/share/Tachidesk --name=test_image_stable test-image:stable
             sleep 15
-            ls /home/runner/work/_temp/tachidesk/
             cat /home/runner/work/_temp/tachidesk/logfile.log
             curl -s 127.0.0.1:4568/api/v1/settings/about/ && val=$(curl -s 127.0.0.1:4568/api/v1/settings/about/ | grep -o "Tachidesk" | sort --unique)
             if [[ $val == "Tachidesk" ]]; then
