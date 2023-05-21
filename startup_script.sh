@@ -14,9 +14,5 @@ echo ""
 echo "Tachidesk data location inside the container -> /home/suwayomi/.local/share/Tachidesk"
 echo ""
 echo "The server is running by default configuration on  http://localhost:4567"
-if [ "${LOGGING:-file}" != "file" ]; then
-  exec java -jar "/home/suwayomi/startup/tachidesk_latest.jar";
-else
-  echo "log file location inside the container -> /home/suwayomi/.local/share/Tachidesk/logfile.log"
-  exec java -jar "/home/suwayomi/startup/tachidesk_latest.jar" > /home/suwayomi/.local/share/Tachidesk/logfile.log 2>&1;
-fi
+
+exec java -jar "/home/suwayomi/startup/tachidesk_latest.jar";

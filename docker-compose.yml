@@ -1,0 +1,16 @@
+---
+version: '3.7'
+
+services:
+
+  tachidesk-docker:
+    image: ghcr.io/suwayomi/tachidesk:stable
+    environment:
+      - PUID=1000 # ( dont change, require uid to be 1000 )
+      - PGID=1000 # ( dont change, require gid to be 1000 )
+      - TZ=Etc/UTC # Use TZ database name from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    volumes:
+      - ./data:/home/suwayomi/.local/share/Tachidesk # edit <path to folder> to your mapped folder
+    ports:
+      - "4567:4567"
+    restart: on-failure:3
