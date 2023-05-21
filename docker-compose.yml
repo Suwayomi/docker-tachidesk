@@ -2,7 +2,7 @@
 version: '3.7'
 services:
   tachidesk-docker:
-    image: ghcr.io/suwayomi/tachidesk:stable
+    image: tachidesk:new
     environment:
       - TZ=Etc/UTC # Use TZ database name from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     volumes:

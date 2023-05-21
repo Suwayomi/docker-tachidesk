@@ -14,75 +14,79 @@ _**Tachidesk data location - /home/suwayomi/.local/share/Tachidesk**_
 
 Docker images are mutli-arch (linux/amd64, linux/arm/v7, linux/arm64, linux/ppc64le, linux/s390x) and has small size based on Ubuntu linux.
 
-Legacy alpine images using the `-alpine` suffix are provided for as-needed use-cases, such as:
-- Support for linux platforms linux/386 and linux/arm/v6
-- Those that need a smaller image size
+Logs are sent to stdout and are not written to disk.
 
-Log file location - /home/suwayomi/.local/share/Tachidesk/logfile.log
+### Docker compose
+Use the template [docker-compose.yml](./docker-compose.yml) in this repo for creating and starting tachidesk docker container.
 
-# Docker compose
-Use the template compose.yml in this repo for creating and starting tachidesk docker container.  
+# Environment Variables
+
+There are a number of environment variables available to configure Suwayomi:
+
+| Variable | Default | Description |
+|:-:|:-:|:-:|
+| **BIND_IP** | `0.0.0.0` | The interface to listen on, inside the container. You almost never want to change this. |
+| **BIND_PORT** | `4567` | Which port Suwayomi will listen on |
+| **SOCKS_PROXY_ENABLED** | `true` | Whether Suwayomi will connect through a SOCKS5 proxy |
+| **SOCKS_PROXY_HOST** | `0.0.0.0` | The TCP host of the SOCKS5 proxy |
+| **SOCKS_PROXY_PORT** | `0.0.0.0` | The port of the SOCKS5 proxy |
+| **DOWNLOAD_AS_CBZ** | `false` | Whether Suwayomi should save the manga to disk in CBZ format |
+| **MAX_PARALLEL_UPDATE** | `10` | How many sources can be updated at the same time? |
+| **BASIC_AUTH_ENABLED** | `false` | Whether Suwayomi requires HTTP Basic Auth to get in. |
+| **BASIC_AUTH_USERNAME** | `""` | The username to log in to Suwayomi. |
+| **BASIC_AUTH_PASSWORD** | `""` | The password to log in to Suwayomi. |
+| **DEBUG** | `true` | If extra logging is enabled. Useful for development and troubleshooting. |
 
 # Docker tags
 
-### Recommended tags (Ubuntu, Java 11):
+## Stable
 
-Stable: `ghcr.io/suwayomi/tachidesk:stable`
+`ghcr.io/suwayomi/tachidesk:stable`
 
-Preview: `ghcr.io/suwayomi/tachidesk:preview`
+The latest stable release of the server.
 
-Latest: `ghcr.io/suwayomi/tachidesk:latest`
+## Preview
 
+`ghcr.io/suwayomi/tachidesk:preview`
 
+The latest preview release of the server. Can be buggy!
 
-### Legacy tags, should only be used as required (Alpine, Java 8):
+## Latest
 
-Stable: `ghcr.io/suwayomi/tachidesk:stable-alpine`
+`ghcr.io/suwayomi/tachidesk:latest`
 
-Preview: `ghcr.io/suwayomi/tachidesk:preview-alpine`
-
-Latest: `ghcr.io/suwayomi/tachidesk:latest-alpine`
-
-
-
-### Explicit Ubuntu tags (Ubuntu, Java 11) :
-
-Stable: `ghcr.io/suwayomi/tachidesk:stable-ubuntu`
-
-Preview: `ghcr.io/suwayomi/tachidesk:preview-ubuntu`
-
-Latest: `ghcr.io/suwayomi/tachidesk:latest-ubuntu`
+The most recent container to be created, can be either the stable or preview versions. Be careful!
 
 # Docker commands
 
 Expose to localhost ip
 
-    docker run -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk
+    docker run -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:stable
 
 Expose to specific ip
 
-    docker run -p 192.168.x.x:4567:4567 ghcr.io/suwayomi/tachidesk
+    docker run -p 192.168.x.x:4567:4567 ghcr.io/suwayomi/tachidesk:stable
 
 Expose to all ips
 
-    docker run -p 4567:4567 ghcr.io/suwayomi/tachidesk
+    docker run -p 4567:4567 ghcr.io/suwayomi/tachidesk:stable
 
 Change the default UTC timezone. Use TZ database name from [Timezone list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
 
-    docker run -e "TZ=Europe/London" -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk
+    docker run -e "TZ=Europe/London" -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:stable
 
 Change the logging location from a file to standard output
 
-    docker run -e "LOGGING=out" -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk
-	
+    docker run -e "LOGGING=out" -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:stable
+
 For Tachidesk Preview version
 
      docker run -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:preview
 
 Persistent data of tachidesk on subsequent run
 
-    docker run -p 127.0.0.1:4567:4567 -v <folder path>:/./home/suwayomi/.local/share/Tachidesk ghcr.io/suwayomi/tachidesk   
-	 
+    docker run -p 127.0.0.1:4567:4567 -v <folder path>:/./home/suwayomi/.local/share/Tachidesk ghcr.io/suwayomi/tachidesk
+
 For Specific Tachidesk stable version (from v0.3.9 onwards)
 
      docker run -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:v0.3.9

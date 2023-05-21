@@ -24,14 +24,24 @@ LABEL maintainer="suwayomi" \
       download_url=$TACHIDESK_RELEASE_DOWNLOAD_URL \
       org.opencontainers.image.licenses="MPL-2.0"
 
+# Install envsubst from GNU's gettext project
+RUN apt-get update && \
+    apt-get -y install gettext-base && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create a user to run as
 RUN groupadd --gid 1000 suwayomi && \
     useradd  --uid 1000 --gid suwayomi --no-log-init suwayomi && \
     mkdir -p /home/suwayomi && \
     chown -R suwayomi:suwayomi /home/suwayomi
 USER suwayomi
 WORKDIR /home/suwayomi
+
+# Copy the app into the container
 RUN curl -s --create-dirs -L $TACHIDESK_RELEASE_DOWNLOAD_URL -o /home/suwayomi/startup/tachidesk_latest.jar
 COPY startup_script.sh /home/suwayomi/startup_script.sh
+COPY server.conf.template /home/suwayomi/server.conf.template
 
 EXPOSE 4567
 CMD ["/bin/sh", "/home/suwayomi/startup_script.sh"]
