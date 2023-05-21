@@ -76,10 +76,6 @@ Change the default UTC timezone. Use TZ database name from [Timezone list](https
 
     docker run -e "TZ=Europe/London" -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:stable
 
-Change the logging location from a file to standard output
-
-    docker run -e "LOGGING=out" -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:stable
-
 For Tachidesk Preview version
 
      docker run -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:preview
