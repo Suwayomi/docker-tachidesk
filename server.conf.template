@@ -1,9 +1,9 @@
 # Server ip and port bindings
-server.ip = "${BIND_IP:-0.0.0.0}"
-server.port = ${BIND_PORT:-4567}
+server.ip = "${BIND_IP}"
+server.port = ${BIND_PORT}
 
 # Socks5 proxy
-server.socksProxy = ${SOCKS_PROXY_ENABLED:-false}
+server.socksProxy = ${SOCKS_PROXY_ENABLED}
 server.socksProxyHost = "${SOCKS_PROXY_HOST}"
 server.socksProxyPort = "${SOCKS_PROXY_PORT}"
 
@@ -15,18 +15,18 @@ server.webUIInterface = "browser" # "browser" or "electron"
 server.electronPath = ""
 
 # downloader
-server.downloadAsCbz = ${DOWNLOAD_AS_CBZ:-false}
+server.downloadAsCbz = ${DOWNLOAD_AS_CBZ}
 server.downloadsPath = ""
 
 # updater
 # sets how many sources can be updated in parallel. updates are grouped by source and all mangas of a source are updated synchronously
-server.maxParallelUpdateRequests = ${MAX_PARALLEL_UPDATE:-10}
+server.maxParallelUpdateRequests = ${MAX_PARALLEL_UPDATE}
 
 # Authentication
-server.basicAuthEnabled = ${BASIC_AUTH_ENABLED:-false}
+server.basicAuthEnabled = ${BASIC_AUTH_ENABLED}
 server.basicAuthUsername = "${BASIC_AUTH_USERNAME}"
 server.basicAuthPassword = "${BASIC_AUTH_PASSWORD}"
 
 # misc
-server.debugLogsEnabled = ${DEBUG:-true}
+server.debugLogsEnabled = ${DEBUG}
 server.systemTrayEnabled = false # always disabled as we are in a headless container

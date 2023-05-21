@@ -25,11 +25,12 @@ There are a number of environment variables available to configure Suwayomi:
 
 | Variable | Default | Description |
 |:-:|:-:|:-:|
+| **TZ** | `Etc/UTC` | What time zone the container thinks it is. |
 | **BIND_IP** | `0.0.0.0` | The interface to listen on, inside the container. You almost never want to change this. |
 | **BIND_PORT** | `4567` | Which port Suwayomi will listen on |
-| **SOCKS_PROXY_ENABLED** | `true` | Whether Suwayomi will connect through a SOCKS5 proxy |
-| **SOCKS_PROXY_HOST** | `0.0.0.0` | The TCP host of the SOCKS5 proxy |
-| **SOCKS_PROXY_PORT** | `0.0.0.0` | The port of the SOCKS5 proxy |
+| **SOCKS_PROXY_ENABLED** | `false` | Whether Suwayomi will connect through a SOCKS5 proxy |
+| **SOCKS_PROXY_HOST** | `""` | The TCP host of the SOCKS5 proxy |
+| **SOCKS_PROXY_PORT** | `""` | The port of the SOCKS5 proxy |
 | **DOWNLOAD_AS_CBZ** | `false` | Whether Suwayomi should save the manga to disk in CBZ format |
 | **MAX_PARALLEL_UPDATE** | `10` | How many sources can be updated at the same time? |
 | **BASIC_AUTH_ENABLED** | `false` | Whether Suwayomi requires HTTP Basic Auth to get in. |
