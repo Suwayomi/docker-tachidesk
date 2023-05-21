@@ -1,13 +1,13 @@
 name: Save Docker Pull Count
 on:
   workflow_dispatch:
-#  schedule:
-#    - cron: "0 11 * * *"
-    
+  schedule:
+    - cron: "0 11 * * 0"
+
 jobs:
  save_pull_count:
     runs-on: ubuntu-latest
-    steps:   
+    steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -33,5 +33,5 @@ jobs:
                   git push
               else
                   echo "No changes to commit"
-              fi    
+              fi
           fi
