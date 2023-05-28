@@ -1,9 +1,11 @@
 ARG BASE_IMAGE=none
+ARG PLATFORM
 
-FROM $BASE_IMAGE
+FROM $BASE_IMAGE as base
 
 ARG BASE_IMAGE
 ARG BUILD_DATE
+ARG PLATFORM
 ARG IMAGE_VERSION
 ARG IMAGE_TYPE
 ARG TACHIDESK_GIT_COMMIT
@@ -12,16 +14,49 @@ ARG TACHIDESK_FILENAME
 ARG TACHIDESK_RELEASE_DOWNLOAD_URL
 ARG TACHIDESK_DOCKER_GIT_COMMIT
 ARG STARTUP_SCRIPT_URL
+ARG SUPERVISORD_URL
+ARG SUPERVISORD_TACHIDESK_URL
+ARG SUPERVISORD_WEBSOCKIFY_URL
+ARG SUPERVISORD_X11VNC_URL
+ARG SUPERVISORD_XVFB_URL
 
-RUN if echo "$BASE_IMAGE" | grep -q "openjdk"; then useradd -ms /bin/sh suwayomi; \
-    elif echo "$BASE_IMAGE" | grep -q "eclipse-temurin"; then \
-        if echo "$BASE_IMAGE" | grep -q "alpine"; then \
-            apk --update add curl tzdata && addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi; \
-        else \
-            groupadd --gid 1000 suwayomi && useradd  --uid 1000 --gid suwayomi --no-log-init suwayomi; fi; \
-    elif echo "$BASE_IMAGE" | grep -q "alpine"; then apk --update add curl openjdk8-jre-base tzdata && addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi; \
-    else echo "wrong base image"; \
-    fi
+FROM base as branch-base-alpine
+RUN apk --update add curl openjdk8-jre-base tzdata && addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi;
+
+FROM base as branch-base-ubuntu
+RUN apt update && apt install -y --no-install-recommends \
+        xvfb \
+        xauth \
+        x11vnc \
+        x11-utils \
+        x11-xserver-utils \
+        novnc \
+        supervisor \
+        libglib2.0-0 \
+        libnss3 \
+        libnspr4 \
+        libatk1.0-0 \
+        libatk-bridge2.0-0 \
+        libcups2 \
+        libdrm2 \
+        libdbus-1-3 \
+        libatspi2.0-0 \
+        libx11-6 \
+        libxcomposite1 \
+        libxdamage1 \
+        libxext6 \
+        libxfixes3 \
+        libxrandr2 \
+        libgbm1 \
+        libxkbcommon0 \
+        libxcb1 \
+        libpango-1.0-0 \
+        libcairo2 \
+        libasound2
+
+RUN groupadd --gid 1000 suwayomi && useradd  --uid 1000 --gid suwayomi --no-log-init suwayomi;
+
+FROM branch-base-${PLATFORM} AS home
 
 LABEL maintainer="suwayomi" \
       org.opencontainers.image.title="Tachidesk Docker" \
@@ -34,6 +69,7 @@ LABEL maintainer="suwayomi" \
       org.opencontainers.image.created=$BUILD_DATE \	  
       org.opencontainers.image.version=$IMAGE_VERSION \
       image_type=$IMAGE_TYPE \
+      platform=$PLATFORM \
       "tachidesk.git_commit"=$TACHIDESK_GIT_COMMIT \
       "tachidesk.release_tag"=$TACHIDESK_RELEASE_TAG \
       "tachidesk.filename"=$TACHIDESK_FILENAME \
@@ -41,6 +77,15 @@ LABEL maintainer="suwayomi" \
       org.opencontainers.image.licenses="MPL-2.0"
 
 RUN mkdir -p /home/suwayomi && chown -R suwayomi:suwayomi /home/suwayomi
+
+FROM home as branch-home-alpine
+
+FROM home as branch-home-ubuntu
+RUN mkdir -p /Xauthority && chown -R suwayomi:suwayomi /Xauthority
+VOLUME /Xauthority
+
+FROM branch-home-${PLATFORM} AS display
+
 USER suwayomi:suwayomi
 WORKDIR /home/suwayomi
 RUN echo $TACHIDESK_FILENAME
@@ -48,5 +93,24 @@ RUN curl -s --create-dirs -L $TACHIDESK_RELEASE_DOWNLOAD_URL -o /home/suwayomi/s
 RUN echo $TACHIDESK_DOCKER_GIT_COMMIT
 RUN curl -s --create-dirs -L $STARTUP_SCRIPT_URL -o /home/suwayomi/startup/startup_script.sh
 
+FROM display as branch-display-alpine
 EXPOSE 4567
+
+FROM display as branch-display-ubuntu
+RUN curl -s --create-dirs -L $SUPERVISORD_URL -o /home/suwayomi/startup/supervisord.conf
+RUN curl -s --create-dirs -L $SUPERVISORD_TACHIDESK_URL -o /home/suwayomi/startup/conf.d/tachidesk.conf
+RUN curl -s --create-dirs -L $SUPERVISORD_WEBSOCKIFY_URL -o /home/suwayomi/startup/conf.d/websockify.conf
+RUN curl -s --create-dirs -L $SUPERVISORD_X11VNC_URL -o /home/suwayomi/startup/conf.d/x11vnc.conf
+RUN curl -s --create-dirs -L $SUPERVISORD_XVFB_URL -o /home/suwayomi/startup/conf.d/xvfb.conf
+# start x11vnc and expose its port
+ENV DISPLAY :0.0
+# vnv server
+EXPOSE 5900
+# novnc
+EXPOSE 5800
+# Tachidesk
+EXPOSE 4567
+
+FROM branch-display-${PLATFORM} AS final
+
 CMD ["/bin/sh", "/home/suwayomi/startup/startup_script.sh"]
