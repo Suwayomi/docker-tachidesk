@@ -40,7 +40,7 @@ WORKDIR /home/suwayomi
 
 # Copy the app into the container
 RUN curl -s --create-dirs -L $TACHIDESK_RELEASE_DOWNLOAD_URL -o /home/suwayomi/startup/tachidesk_latest.jar
-COPY startup_script.sh /home/suwayomi/startup_script.sh
+COPY scripts/startup_script.sh /home/suwayomi/startup_script.sh
 COPY server.conf.template /home/suwayomi/server.conf.template
 
 EXPOSE 4567
