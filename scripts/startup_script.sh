@@ -1,22 +1,24 @@
 #!/bin/sh
-if [ ! -f /home/suwayomi/.local/share/Tachidesk/docker_touchfile ]; then
-	touch /home/suwayomi/.local/share/Tachidesk/docker_touchfile
-	curl -s --create-dirs -L https://raw.githubusercontent.com/Suwayomi/docker-tachidesk/main/server.conf -o /home/suwayomi/.local/share/Tachidesk/server.conf;
-fi
-echo ""
-echo ""
-echo "                                                                ************README***********"
-echo "-> It is essential that u read readme for ghcr.io/suwayomi/tachidesk before running this container"
-echo "-> Readme for ghcr.io/suwayomi/tachidesk is available at https://github.com/suwayomi/docker-tachidesk "
-echo "                                                                *****************************"
-echo ""
-echo ""
-echo "Tachidesk data location inside the container -> /home/suwayomi/.local/share/Tachidesk"
-echo ""
-echo "The server is running by default configuration on  http://localhost:4567"
-if [ "${LOGGING:-file}" != "file" ]; then
-  exec java -jar "/home/suwayomi/startup/tachidesk_latest.jar";
-else
-  echo "log file location inside the container -> /home/suwayomi/.local/share/Tachidesk/logfile.log"
-  exec java -jar "/home/suwayomi/startup/tachidesk_latest.jar" > /home/suwayomi/.local/share/Tachidesk/logfile.log 2>&1;
-fi
+
+# Immediately bail out if any command fails:
+set -e
+
+echo "Suwayomi data location inside the container: /home/suwayomi/.local/share/Tachidesk"
+
+# set default values for environment variables:
+export TZ="${TZ:-Etc/UTC}"
+export BIND_IP="${BIND_IP:-0.0.0.0}"
+export BIND_PORT="${BIND_PORT:-4567}"
+export SOCKS_PROXY_ENABLED="${SOCKS_PROXY_ENABLED:-false}"
+export SOCKS_PROXY_HOST="${SOCKS_PROXY_HOST:-""}"
+export SOCKS_PROXY_PORT="${SOCKS_PROXY_PORT:-""}"
+export DOWNLOAD_AS_CBZ="${DOWNLOAD_AS_CBZ:-false}"
+export MAX_PARALLEL_UPDATE="${MAX_PARALLEL_UPDATE:-10}"
+export BASIC_AUTH_ENABLED="${BASIC_AUTH_ENABLED:-false}"
+export BASIC_AUTH_USERNAME="${BASIC_AUTH_USERNAME:-""}"
+export BASIC_AUTH_PASSWORD="${BASIC_AUTH_PASSWORD:-""}"
+export DEBUG="${DEBUG:-true}"
+
+envsubst < /home/suwayomi/server.conf.template > /home/suwayomi/.local/share/Tachidesk/server.conf
+
+exec java -jar "/home/suwayomi/startup/tachidesk_latest.jar";

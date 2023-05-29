@@ -1,17 +1,49 @@
-FROM eclipse-temurin:11-jre-focal
+FROM eclipse-temurin:11-jre-jammy
 
-RUN groupadd --gid 1000 suwayomi && useradd  --uid 1000 --gid suwayomi --no-log-init suwayomi;
+ARG BUILD_DATE
+ARG IMAGE_VERSION
+ARG TACHIDESK_GIT_COMMIT
+ARG TACHIDESK_RELEASE_TAG
+ARG TACHIDESK_FILENAME
+ARG TACHIDESK_RELEASE_DOWNLOAD_URL
+ARG TACHIDESK_DOCKER_GIT_COMMIT
 
-RUN mkdir -p /home/suwayomi && chown -R suwayomi:suwayomi /home/suwayomi
+LABEL maintainer="suwayomi" \
+      org.opencontainers.image.title="Suwayomi Docker" \
+      org.opencontainers.image.authors="https://github.com/suwayomi" \
+      org.opencontainers.image.url="https://github.com/suwayomi/docker-tachidesk/pkgs/container/tachidesk" \
+      org.opencontainers.image.source="https://github.com/suwayomi/docker-tachidesk" \
+      org.opencontainers.image.description="This image is used to start suwayomi server in a container" \
+      org.opencontainers.image.vendor="suwayomi" \
+      org.opencontainers.image.created=$BUILD_DATE \
+      org.opencontainers.image.version=$IMAGE_VERSION \
+      tachidesk.git_commit=$TACHIDESK_GIT_COMMIT \
+      tachidesk.docker_commit=$TACHIDESK_DOCKER_GIT_COMMIT \
+      tachidesk.release_tag=$TACHIDESK_RELEASE_TAG \
+      tachidesk.filename=$TACHIDESK_FILENAME \
+      download_url=$TACHIDESK_RELEASE_DOWNLOAD_URL \
+      org.opencontainers.image.licenses="MPL-2.0"
 
+# Install envsubst from GNU's gettext project
+RUN apt-get update && \
+    apt-get -y install gettext-base && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create a user to run as
+RUN groupadd --gid 1000 suwayomi && \
+    useradd  --uid 1000 --gid suwayomi --no-log-init suwayomi && \
+    mkdir -p /home/suwayomi && \
+    chown -R suwayomi:suwayomi /home/suwayomi
 USER suwayomi
-
 WORKDIR /home/suwayomi
 
-RUN curl -s --create-dirs -L https://raw.githubusercontent.com/suwayomi/docker-tachidesk/main/scripts/startup_script.sh -o /home/suwayomi/startup/startup_script.sh
-
-RUN curl -L $(curl -s https://api.github.com/repos/suwayomi/tachidesk-server/releases/latest | grep -o "https.*jar") -o /home/suwayomi/startup/tachidesk_latest.jar
+# Copy the app into the container
+RUN curl -s --create-dirs -L $TACHIDESK_RELEASE_DOWNLOAD_URL -o /home/suwayomi/startup/tachidesk_latest.jar
+COPY scripts/startup_script.sh /home/suwayomi/startup_script.sh
+COPY server.conf.template /home/suwayomi/server.conf.template
 
 EXPOSE 4567
+CMD ["/bin/sh", "/home/suwayomi/startup_script.sh"]
 
-CMD ["/bin/sh", "/home/suwayomi/startup/startup_script.sh"]
+# vim: set ft=dockerfile:

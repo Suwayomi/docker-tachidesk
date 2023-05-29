@@ -1,0 +1,21 @@
+---
+version: '3.7'
+services:
+  suwayomi:
+    image: tachidesk:new
+    environment:
+      - TZ=Etc/UTC # Use TZ database name from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+      - DEBUG=true
+      - BIND_IP=0.0.0.0
+      - BIND_PORT=4567
+      - SOCKS_PROXY_ENABLED=false
+      - DOWNLOAD_AS_CBZ=true
+      - MAX_PARALLEL_UPDATE=3
+      - BASIC_AUTH_ENABLED=true
+      - BASIC_AUTH_USERNAME=manga
+      - BASIC_AUTH_PASSWORD=hello123
+    volumes:
+      - ./data:/home/suwayomi/.local/share/Tachidesk
+    ports:
+      - "4567:4567"
+    restart: on-failure:3
