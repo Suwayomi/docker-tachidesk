@@ -85,28 +85,23 @@ jobs:
       # Launch the container and then hit the about API to verifiy that it can start up correctly.
       - name: Test new container image
         run: |
-            mkdir -p /home/runner/work/_temp/tachidesk
-            chmod -R 777 /home/runner/work/_temp/tachidesk
-            docker run --rm -d -p 127.0.0.1:4568:4567 -v /home/runner/work/_temp/tachidesk:/home/suwayomi/.local/share/Tachidesk --name=test_image_stable ${{ env.test_image_tag }}
+            mkdir -p ${{ runner.temp }}/tachidesk
+            chmod -R 777 ${{ runner.temp }}/tachidesk
+            docker run --rm -d -p 127.0.0.1:4568:4567 -v ${{ runner.temp }}/tachidesk:/home/suwayomi/.local/share/Tachidesk --name=suwayomi_test ${{ env.test_image_tag }}
             sleep 15
-            cat /home/runner/work/_temp/tachidesk/logfile.log
             curl -s 127.0.0.1:4568/api/v1/settings/about/ && val=$(curl -s 127.0.0.1:4568/api/v1/settings/about/ | grep -o "Tachidesk" | sort --unique)
-            if [[ $val == "Tachidesk" ]]; then
-                echo ""
-                echo "Tachidesk stable ubuntu run successfully"
-                echo "value=true" >> $GITHUB_OUTPUT
-                docker stop test_image_stable
-            else
-                echo ""
-                echo "Tachidesk stable ubuntu run Failed"
-                echo "value=false" >> $GITHUB_OUTPUT
-                curl \
-                  -F 'payload_json={"username": "Github", "content": "<@255018340244914177>\n<@106949211932606464>\nDocker ${{ inputs.tachidesk_release_type }} image dry run failed! 😢 Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
-                  -F "file1=@/home/runner/work/_temp/tachidesk/logfile.log" \
-                  "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
-                fi
+            docker logs suwayomi_test > ${{ runner.temp }}/tachidesk.log
+            if [[ $val != "Tachidesk" ]]; then
                 exit 1
             fi
+
+      - name: Alert the devs via Discord message that the build broke
+        if: failure()
+        run: |
+          curl \
+            -F 'payload_json={"username": "Github", "content": "<@855022649926221854>\nDocker ${{ inputs.tachidesk_release_type }} image dry run failed! 😢 Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
+            -F "file1=@${{ runner.temp }}/tachidesk.log" \
+            "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
 
       # Now we build for all of the platforms we support here. NB: the amd64
       # won't be rebuilt since the local docker daemon has that still cached
@@ -129,11 +124,11 @@ jobs:
             ghcr.io/suwayomi/tachidesk:${{ inputs.tachidesk_release_type == 'stable' && steps.get_latest_release_metadata.outputs.release_tag || steps.get_latest_release_metadata.outputs.release_var }}
 
       - name: Send a Discord message through the webhook (preview build)
-        if: ${{ inputs.tachidesk_release_type == 'preview' }}
+        if: inputs.tachidesk_release_type == 'preview'
         run: |
           curl -H "Content-Type: application/json" -d '{"content": "Docker Preview Image Published!","embeds":[{"color":16729344,"author":{"name":"${{ github.repository_owner }}","icon_url":"https://avatars.githubusercontent.com/u/81182076","url":"https://github.com/${{ github.repository_owner }}"},"title":"Docker Preview Release","url":"https://github.com/${{ github.repository_owner }}/docker-tachidesk","fields":[{"name":"docker update","value":"docker pull ghcr.io/suwayomi/tachidesk:preview","inline":false},{"name":"docker run","value":"docker run -p 4567:4567 ghcr.io/suwayomi/tachidesk:preview","inline":false}],"thumbnail":{"url": "https://www.docker.com/sites/default/files/d8/2019-07/vertical-logo-monochromatic.png"},"description":"Tachidesk version - ${{ steps.get_latest_release_metadata.outputs.release_var }}"}]}' "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
 
       - name: Send a Discord message through the webhook (stable build)
-        if: ${{ inputs.tachidesk_release_type == 'stable' }}
+        if: inputs.tachidesk_release_type == 'stable'
         run: |
           curl -H "Content-Type: application/json" -d '{"content": "Docker Stable Image Published!","embeds":[{"color":5409028,"author":{"name":"${{ github.repository_owner }}","icon_url":"https://avatars.githubusercontent.com/u/81182076","url":"https://github.com/${{ github.repository_owner }}"},"title":"Docker Stable Release","url":"https://github.com/${{ github.repository_owner }}/docker-tachidesk","fields":[{"name":"docker update","value":"docker pull ghcr.io/suwayomi/tachidesk:stable","inline":false},{"name":"docker run","value":"docker run -p 4567:4567 ghcr.io/suwayomi/tachidesk","inline":false}],"thumbnail":{"url": "https://www.docker.com/sites/default/files/d8/2019-07/vertical-logo-monochromatic.png"},"description":"Tachidesk version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}]}' "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
