@@ -1,8 +1,6 @@
 FROM eclipse-temurin:11-jre-jammy
 
 ARG BUILD_DATE
-ARG IMAGE_VERSION
-ARG TACHIDESK_GIT_COMMIT
 ARG TACHIDESK_RELEASE_TAG
 ARG TACHIDESK_FILENAME
 ARG TACHIDESK_RELEASE_DOWNLOAD_URL
@@ -16,8 +14,7 @@ LABEL maintainer="suwayomi" \
       org.opencontainers.image.description="This image is used to start suwayomi server in a container" \
       org.opencontainers.image.vendor="suwayomi" \
       org.opencontainers.image.created=$BUILD_DATE \
-      org.opencontainers.image.version=$IMAGE_VERSION \
-      tachidesk.git_commit=$TACHIDESK_GIT_COMMIT \
+      org.opencontainers.image.version=$TACHIDESK_RELEASE_TAG \
       tachidesk.docker_commit=$TACHIDESK_DOCKER_GIT_COMMIT \
       tachidesk.release_tag=$TACHIDESK_RELEASE_TAG \
       tachidesk.filename=$TACHIDESK_FILENAME \

@@ -16,8 +16,10 @@ on:
             - preview
 
 env:
-  server_repo: ${{ inputs.tachidesk_release_type == 'stable' && 'Tachidesk-Server' || 'Tachidesk-Server-prevew' }}
+  server_repo: ${{ inputs.tachidesk_release_type == 'stable' && 'Tachidesk-Server' || 'Tachidesk-Server-preview' }}
   test_image_tag: ghcr.io/suwayomi/tachidesk:testing
+  this_actions_run_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+  latest_release_json: ${{ runner.temp }}/latest_release.json
 
 jobs:
   build_stable:
@@ -47,22 +49,15 @@ jobs:
       - name: Get latest release metadata
         id: get_latest_release_metadata
         run: |
-          cd main
-          latest_release_json=$(curl -s https://api.github.com/repos/suwayomi/${{ env.server_repo }}/releases/latest)
-          release_url=$(echo $latest_release_json | egrep -o "https://.*./releases/download.*.Tachidesk-Server.*.jar")
-          release_tag=$(echo $latest_release_json | egrep -o "tag_name.*.v[0-9]+.[0-9]+.[0-9]+" | egrep -o "v[0-9]+.[0-9]+.[0-9]+")
-          release_var=$(echo $release_url | egrep -o "Tachidesk-Server-$release_tag-r[0-9]+.jar" | egrep -o "$release_tag-r[0-9]+")
-          release_commit=$(echo $release_var | cut -f2 -d"r")
-          release_filename=Tachidesk-Server-${release_var}.jar
-          release_version=$(echo $release_tag | cut -c2-)
+          curl -s https://api.github.com/repos/suwayomi/${{ env.server_repo }}/releases/latest > ${{ env.latest_release_json }}
+          release_url=$(jq -r '.assets[] | select(.content_type == "application/java-archive") | .browser_download_url' ${{ env.latest_release_json }})
+          release_tag=$(jq -r '.tag_name' ${{ env.latest_release_json }})
+          release_filename=$(basename $release_url)
           tachidesk_docker_git_commit=$(git rev-list --count HEAD)
           build_date=$(date "+%F")
           echo "release_url=$release_url" >> $GITHUB_OUTPUT
           echo "release_tag=$release_tag" >> $GITHUB_OUTPUT
-          echo "release_var=$release_var" >> $GITHUB_OUTPUT
-          echo "release_commit=$release_commit" >> $GITHUB_OUTPUT
           echo "release_filename=$release_filename" >> $GITHUB_OUTPUT
-          echo "release_version=$release_version" >> $GITHUB_OUTPUT
           echo "tachidesk_docker_git_commit=$tachidesk_docker_git_commit" >> $GITHUB_OUTPUT
           echo "build_date=$build_date" >> $GITHUB_OUTPUT
 
@@ -74,8 +69,6 @@ jobs:
           load: true # this is important, as this tells build-push-action to save the container to the local docker daemon
           build-args: |
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
-            IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
-            TACHIDESK_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.release_commit }}
             TACHIDESK_RELEASE_TAG=${{ steps.get_latest_release_metadata.outputs.release_tag }}
             TACHIDESK_RELEASE_DOWNLOAD_URL=${{ steps.get_latest_release_metadata.outputs.release_url }}
             TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
@@ -92,16 +85,13 @@ jobs:
             curl -s 127.0.0.1:4568/api/v1/settings/about/ && val=$(curl -s 127.0.0.1:4568/api/v1/settings/about/ | grep -o "Tachidesk" | sort --unique)
             docker logs suwayomi_test > ${{ runner.temp }}/tachidesk.log
             if [[ $val != "Tachidesk" ]]; then
-                exit 1
+              echo "Did not find Tachidesk in server response: ${val}"
+              curl \
+                -F 'payload_json={"username": "Github", "content": "<@855022649926221854>\nDocker ${{ inputs.tachidesk_release_type }} image dry run failed! 😢 Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}. [See the full run log](${{ env.this_actions_run_url }})"}' \
+                -F "file1=@${{ runner.temp }}/tachidesk.log" \
+                "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
+              exit 1
             fi
-
-      - name: Alert the devs via Discord message that the build broke
-        if: failure()
-        run: |
-          curl \
-            -F 'payload_json={"username": "Github", "content": "<@855022649926221854>\nDocker ${{ inputs.tachidesk_release_type }} image dry run failed! 😢 Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}' \
-            -F "file1=@${{ runner.temp }}/tachidesk.log" \
-            "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
 
       # Now we build for all of the platforms we support here. NB: the amd64
       # won't be rebuilt since the local docker daemon has that still cached
@@ -112,8 +102,6 @@ jobs:
           push: true
           build-args: |
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
-            IMAGE_VERSION=${{ steps.get_latest_release_metadata.outputs.release_version }}
-            TACHIDESK_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.release_commit }}
             TACHIDESK_RELEASE_TAG=${{ steps.get_latest_release_metadata.outputs.release_tag }}
             TACHIDESK_RELEASE_DOWNLOAD_URL=${{ steps.get_latest_release_metadata.outputs.release_url }}
             TACHIDESK_FILENAME=${{ steps.get_latest_release_metadata.outputs.release_filename }}
@@ -121,12 +109,12 @@ jobs:
           tags: |
             ghcr.io/suwayomi/tachidesk:latest
             ghcr.io/suwayomi/tachidesk:${{ inputs.tachidesk_release_type }}
-            ghcr.io/suwayomi/tachidesk:${{ inputs.tachidesk_release_type == 'stable' && steps.get_latest_release_metadata.outputs.release_tag || steps.get_latest_release_metadata.outputs.release_var }}
+            ghcr.io/suwayomi/tachidesk:${{ inputs.tachidesk_release_type == 'stable' && steps.get_latest_release_metadata.outputs.release_tag }}
 
       - name: Send a Discord message through the webhook (preview build)
         if: inputs.tachidesk_release_type == 'preview'
         run: |
-          curl -H "Content-Type: application/json" -d '{"content": "Docker Preview Image Published!","embeds":[{"color":16729344,"author":{"name":"${{ github.repository_owner }}","icon_url":"https://avatars.githubusercontent.com/u/81182076","url":"https://github.com/${{ github.repository_owner }}"},"title":"Docker Preview Release","url":"https://github.com/${{ github.repository_owner }}/docker-tachidesk","fields":[{"name":"docker update","value":"docker pull ghcr.io/suwayomi/tachidesk:preview","inline":false},{"name":"docker run","value":"docker run -p 4567:4567 ghcr.io/suwayomi/tachidesk:preview","inline":false}],"thumbnail":{"url": "https://www.docker.com/sites/default/files/d8/2019-07/vertical-logo-monochromatic.png"},"description":"Tachidesk version - ${{ steps.get_latest_release_metadata.outputs.release_var }}"}]}' "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
+          curl -H "Content-Type: application/json" -d '{"content": "Docker Preview Image Published!","embeds":[{"color":16729344,"author":{"name":"${{ github.repository_owner }}","icon_url":"https://avatars.githubusercontent.com/u/81182076","url":"https://github.com/${{ github.repository_owner }}"},"title":"Docker Preview Release","url":"https://github.com/${{ github.repository_owner }}/docker-tachidesk","fields":[{"name":"docker update","value":"docker pull ghcr.io/suwayomi/tachidesk:preview","inline":false},{"name":"docker run","value":"docker run -p 4567:4567 ghcr.io/suwayomi/tachidesk:preview","inline":false}],"thumbnail":{"url": "https://www.docker.com/sites/default/files/d8/2019-07/vertical-logo-monochromatic.png"},"description":"Tachidesk version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}"}]}' "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
 
       - name: Send a Discord message through the webhook (stable build)
         if: inputs.tachidesk_release_type == 'stable'
