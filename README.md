@@ -40,23 +40,17 @@ There are a number of environment variables available to configure Suwayomi:
 
 # Docker tags
 
-## Stable
+## Latest
 
-`ghcr.io/suwayomi/tachidesk:stable`
+`ghcr.io/suwayomi/tachidesk:latest`
 
-The latest stable release of the server.
+The latest stable release of the server. Also tagged as `:stable`.
 
 ## Preview
 
 `ghcr.io/suwayomi/tachidesk:preview`
 
 The latest preview release of the server. Can be buggy!
-
-## Latest
-
-`ghcr.io/suwayomi/tachidesk:latest`
-
-The most recent container to be created, can be either the stable or preview versions. Be careful!
 
 # Docker commands
 
