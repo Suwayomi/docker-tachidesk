@@ -13,6 +13,11 @@ on:
         default: true
         description: 'Should the image be uploaded to the registry?'
         type: boolean
+    secrets:
+      DISCORD_TACHIDESK_WEBHOOK_ID:
+        required: true
+      DISCORD_TACHIDESK_TOKEN:
+        required: true
 
 env:
   server_repo: ${{ inputs.tachidesk_release_type == 'stable' && 'Tachidesk-Server' || 'Tachidesk-Server-preview' }}

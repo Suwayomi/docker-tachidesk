@@ -18,3 +18,4 @@ jobs:
     with:
       tachidesk_release_type: ${{ inputs.tachidesk_release_type }}
       do_upload: true
+    secrets: inherit
