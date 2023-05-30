@@ -19,7 +19,6 @@ env:
   server_repo: ${{ inputs.tachidesk_release_type == 'stable' && 'Tachidesk-Server' || 'Tachidesk-Server-preview' }}
   test_image_tag: ghcr.io/suwayomi/tachidesk:testing
   this_actions_run_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-  latest_release_json: ${{ runner.temp }}/latest_release.json
 
 jobs:
   build_stable:
@@ -49,9 +48,9 @@ jobs:
       - name: Get latest release metadata
         id: get_latest_release_metadata
         run: |
-          curl -s https://api.github.com/repos/suwayomi/${{ env.server_repo }}/releases/latest > ${{ env.latest_release_json }}
-          release_url=$(jq -r '.assets[] | select(.content_type == "application/java-archive") | .browser_download_url' ${{ env.latest_release_json }})
-          release_tag=$(jq -r '.tag_name' ${{ env.latest_release_json }})
+          curl -s https://api.github.com/repos/suwayomi/${{ env.server_repo }}/releases/latest > ${{ runner.temp }}/latest_release.json
+          release_url=$(jq -r '.assets[] | select(.content_type == "application/java-archive") | .browser_download_url' ${{ runner.temp }}/latest_release.json)
+          release_tag=$(jq -r '.tag_name' ${{ runner.temp }}/latest_release.json)
           release_filename=$(basename $release_url)
           tachidesk_docker_git_commit=$(git rev-list --count HEAD)
           build_date=$(date "+%F")
