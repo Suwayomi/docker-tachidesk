@@ -1,0 +1,16 @@
+name: Build container of the preview release
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**/README.md'
+  pull_request:
+
+jobs:
+  go:
+    uses: ./.github/workflows/container.yml
+    with:
+      tachidesk_release_type: 'preview'
+      # i.e. only upload the container on push-to-main
+      do_upload: ${{ github.event_name == 'push' }}
