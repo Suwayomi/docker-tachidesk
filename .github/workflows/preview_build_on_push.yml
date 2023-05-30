@@ -14,3 +14,4 @@ jobs:
       tachidesk_release_type: 'preview'
       # i.e. only upload the container on push-to-main
       do_upload: ${{ github.event_name == 'push' }}
+    secrets: inherit
