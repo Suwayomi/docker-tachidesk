@@ -7,10 +7,7 @@ on:
         required: true
         default: 'preview'
         description: 'Suwayomi Release Type'
-        type: choice
-        options:
-          - stable
-          - preview
+        type: string
       do_upload:
         required: true
         default: true
