@@ -17,6 +17,7 @@ server.electronPath = ""
 # downloader
 server.downloadAsCbz = ${DOWNLOAD_AS_CBZ}
 server.downloadsPath = ""
+server.autoDownloadNewChapters = ${AUTODOWNLOAD_NEW_CHAPTERS}
 
 # updater
 # sets how many sources can be updated in parallel. updates are grouped by source and all mangas of a source are updated synchronously
