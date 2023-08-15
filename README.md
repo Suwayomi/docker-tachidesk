@@ -37,6 +37,18 @@ There are a number of environment variables available to configure Suwayomi:
 | **BASIC_AUTH_USERNAME** | `""` | The username to log in to Suwayomi. |
 | **BASIC_AUTH_PASSWORD** | `""` | The password to log in to Suwayomi. |
 | **DEBUG** | `true` | If extra logging is enabled. Useful for development and troubleshooting. |
+| **WEB_UI_FLAVOR** | `"WebUI"` | "WebUI" or "Custom" |
+| **WEB_UI_CHANNEL** | `"stable"` | # "bundled" (the version bundled with the server release), "stable" or "preview" - the webUI version that should be used |
+| **WEB_UI_UPDATE_INTERVAL** | `23` | Time in hours - 0 to disable auto update - range: 1 <= n < 24 - default 23 hours - how often the server should check for webUI updates |
+| **AUTO_DOWNLOAD_CHAPTERS** | `false` | If new chapters that have been retrieved should get automatically downloaded |
+| **MAX_SOURCES_IN_PARALLEL** | `6` | Range: 1 <= n <= 20 - default: 6 - Sets how many sources can do requests (updates, downloads) in parallel. Updates/Downloads are grouped by source and all mangas of a source are updated/downloaded synchronously |
+| **UPDATE_EXCLUDE_UNREAD** | `true` | If unread manga should be excluded from updates |
+| **UPDATE_EXCLUDE_STARTED** | `true` | If manga that haven't been started should be excluded from updates |
+| **UPDATE_EXCLUDE_COMPLETED** | `true` | If completed manga should be excluded from updates |
+| **UPDATE_INTERVAL** | `12` | Time in hours - 0 to disable it - (doesn't have to be full hours e.g. 12.5) - range: 6 <= n < ∞ - default: 12 hours - Interval in which the global update will be automatically triggered |
+| **BACKUP_TIME** | `"00:00"` | Range: hour: 0-23, minute: 0-59 - default: "00:00" - Time of day at which the automated backup should be triggered |
+| **BACKUP_INTERVAL** | `1` | # Time in days - 0 to disable it - range: 1 <= n < ∞ - default: 1 day - Interval in which the server will automatically create a backup |
+| **BACKUP_TTL** | `14` | # Time in days - 0 to disable it - range: 1 <= n < ∞ - default: 14 days - How long backup files will be kept before they will get deleted |
 
 # Docker tags
 
