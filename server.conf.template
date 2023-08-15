@@ -36,7 +36,7 @@ server.basicAuthUsername = "${BASIC_AUTH_USERNAME}"
 server.basicAuthPassword = "${BASIC_AUTH_PASSWORD}"
 
 # misc
-server.debugLogsEnabled =  ${DEBUG}
+server.debugLogsEnabled = ${DEBUG}
 server.systemTrayEnabled = false
 
 # backup
