@@ -38,7 +38,7 @@ There are a number of environment variables available to configure Suwayomi:
 | **BASIC_AUTH_PASSWORD** | `""` | The password to log in to Suwayomi. |
 | **DEBUG** | `true` | If extra logging is enabled. Useful for development and troubleshooting. |
 | **WEB_UI_FLAVOR** | `"WebUI"` | "WebUI" or "Custom" |
-| **WEB_UI_CHANNEL** | `"stable"` | # "bundled" (the version bundled with the server release), "stable" or "preview" - the webUI version that should be used |
+| **WEB_UI_CHANNEL** | `"stable"` | "bundled" (the version bundled with the server release), "stable" or "preview" - the webUI version that should be used |
 | **WEB_UI_UPDATE_INTERVAL** | `23` | Time in hours - 0 to disable auto update - range: 1 <= n < 24 - default 23 hours - how often the server should check for webUI updates |
 | **AUTO_DOWNLOAD_CHAPTERS** | `false` | If new chapters that have been retrieved should get automatically downloaded |
 | **MAX_SOURCES_IN_PARALLEL** | `6` | Range: 1 <= n <= 20 - default: 6 - Sets how many sources can do requests (updates, downloads) in parallel. Updates/Downloads are grouped by source and all mangas of a source are updated/downloaded synchronously |
