@@ -28,12 +28,12 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Create a user to run as
-RUN groupadd --gid 1000 suwayomi && \
-    useradd  --uid 1000 --gid suwayomi --no-log-init suwayomi && \
-    mkdir -p /home/suwayomi && \
-    chown -R suwayomi:suwayomi /home/suwayomi
-USER suwayomi
-WORKDIR /home/suwayomi
+RUN groupadd -g $GID -o $UNAME && \ 
+    useradd  --uid $UID --gid $GID --no-log-init $UNAME && \
+    mkdir -p /home/$UNAME && \
+    chown -R $UNAME:$UNAME /home/$UNAME
+USER $UNAME
+WORKDIR /home/$UNAME
 
 # Copy the app into the container
 RUN curl -s --create-dirs -L $TACHIDESK_RELEASE_DOWNLOAD_URL -o /home/suwayomi/startup/tachidesk_latest.jar
