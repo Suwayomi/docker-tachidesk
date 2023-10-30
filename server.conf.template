@@ -20,6 +20,8 @@ server.webUIUpdateCheckInterval = ${WEB_UI_UPDATE_INTERVAL} # time in hours - 0 
 server.downloadAsCbz = ${DOWNLOAD_AS_CBZ}
 server.downloadsPath = ""
 server.autoDownloadNewChapters = ${AUTO_DOWNLOAD_CHAPTERS} # if new chapters that have been retrieved should get automatically downloaded
+server.excludeEntryWithUnreadChapters = ${AUTO_DOWNLOAD_EXCLUDE_UNREAD} # ignore automatic chapter downloads of entries with unread chapters
+server.autoDownloadAheadLimit = ${AUTO_DOWNLOAD_AHEAD_LIMIT} # 0 to disable it - how many unread downloaded chapters should be available - if the limit is reached, new chapters won't be downloaded automatically
 
 # requests
 server.maxSourcesInParallel = ${MAX_SOURCES_IN_PARALLEL} # range: 1 <= n <= 20 - default: 6 - sets how many sources can do requests (updates, downloads) in parallel. updates/downloads are grouped by source and all mangas of a source are updated/downloaded synchronously
