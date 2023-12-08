@@ -31,6 +31,7 @@ server.excludeUnreadChapters = ${UPDATE_EXCLUDE_UNREAD}
 server.excludeNotStarted = ${UPDATE_EXCLUDE_STARTED}
 server.excludeCompleted = ${UPDATE_EXCLUDE_COMPLETED}
 server.globalUpdateInterval = ${UPDATE_INTERVAL} # time in hours - 0 to disable it - (doesn't have to be full hours e.g. 12.5) - range: 6 <= n < ∞ - default: 12 hours - interval in which the global update will be automatically triggered
+server.updateMangas = ${UPDATE_MANGA_INFO}
 
 # Authentication
 server.basicAuthEnabled = ${BASIC_AUTH_ENABLED}
@@ -39,6 +40,7 @@ server.basicAuthPassword = "${BASIC_AUTH_PASSWORD}"
 
 # misc
 server.debugLogsEnabled = ${DEBUG}
+server.gqlDebugLogsEnabled = ${GQL_DEBUG}
 server.systemTrayEnabled = false
 
 # backup
