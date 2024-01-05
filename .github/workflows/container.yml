@@ -84,10 +84,10 @@ jobs:
             chmod -R 777 ${{ runner.temp }}/tachidesk
             docker run --rm -d -p 127.0.0.1:4568:4567 -v ${{ runner.temp }}/tachidesk:/home/suwayomi/.local/share/Tachidesk --name=suwayomi_test ${{ env.test_image_tag }}
             sleep 15
-            curl -s 127.0.0.1:4568/api/v1/settings/about/ && val=$(curl -s 127.0.0.1:4568/api/v1/settings/about/ | grep -o "Suwayomi" | sort --unique)
+            curl -s 127.0.0.1:4568/api/v1/settings/about/ && val=$(curl -s 127.0.0.1:4568/api/v1/settings/about/ | grep -o "Suwayomi-Server" | sort --unique)
             docker logs suwayomi_test > ${{ runner.temp }}/tachidesk.log
-            if [[ $val != "Suwayomi" ]]; then
-              echo "Did not find Suwayomi in server response: ${val}"
+            if [[ $val != "Suwayomi-Server" ]]; then
+              echo "Did not find Suwayomi-Server in server response: ${val}"
               curl \
                 -F 'payload_json={"username": "Github", "content": "<@855022649926221854>\nDocker ${{ inputs.tachidesk_release_type }} image dry run failed! 😢 Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}. [See the full run log](${{ env.this_actions_run_url }})"}' \
                 -F "file1=@${{ runner.temp }}/tachidesk.log" \
