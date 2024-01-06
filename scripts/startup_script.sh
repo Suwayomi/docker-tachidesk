@@ -33,6 +33,7 @@ export UPDATE_MANGA_INFO="${UPDATE_MANGA_INFO:-false}"
 export BACKUP_TIME="${BACKUP_TIME:-"00:00"}"
 export BACKUP_INTERVAL="${BACKUP_INTERVAL:-1}"
 export BACKUP_TTL="${BACKUP_TTL:-14}"
+export EXTENSION_REPOS="${EXTENSION_REPOS:-"[]"}"
 
 envsubst < /home/suwayomi/server.conf.template > /home/suwayomi/.local/share/Tachidesk/server.conf
 

@@ -43,6 +43,7 @@ There are a number of environment variables available to configure Suwayomi:
 | **AUTO_DOWNLOAD_CHAPTERS** | `false` | If new chapters that have been retrieved should get automatically downloaded |
 | **AUTO_DOWNLOAD_EXCLUDE_UNREAD** | `true` | Ignore automatic chapter downloads of entries with unread chapters
 | **AUTO_DOWNLOAD_AHEAD_LIMIT** | `0` | 0 to disable - how many unread downloaded chapters should be available - if the limit is reached, new chapters won't be downloaded automatically
+| **EXTENSION_REPOS** | `"[]"` | Any additional extension repos to use, the format is `["https://github.com/MY_ACCOUNT/MY_REPO/tree/repo", "https://github.com/MY_ACCOUNT_2/MY_REPO_2/"]`
 | **MAX_SOURCES_IN_PARALLEL** | `6` | Range: 1 <= n <= 20 - Sets how many sources can do requests (updates, downloads) in parallel. Updates/Downloads are grouped by source and all mangas of a source are updated/downloaded synchronously |
 | **UPDATE_EXCLUDE_UNREAD** | `true` | If unread manga should be excluded from updates |
 | **UPDATE_EXCLUDE_STARTED** | `true` | If manga that haven't been started should be excluded from updates |
