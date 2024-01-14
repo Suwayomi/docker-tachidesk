@@ -53,6 +53,8 @@ There are a number of environment variables available to configure Suwayomi:
 | **BACKUP_TIME** | `"00:00"` | Range: hour: 0-23, minute: 0-59 - Time of day at which the automated backup should be triggered |
 | **BACKUP_INTERVAL** | `1` | # Time in days - 0 to disable it - range: 1 <= n < ∞ - Interval in which the server will automatically create a backup |
 | **BACKUP_TTL** | `14` | # Time in days - 0 to disable it - range: 1 <= n < ∞ - How long backup files will be kept before they will get deleted |
+| **PUID** | `1000` | Alternative UID to run as. Requires setting --user 0. |
+| **PGID** | `1000` | Alternative GID to run as. Requires setting --user 0. |
 
 # Docker tags
 
@@ -97,6 +99,10 @@ Persistent data of tachidesk on subsequent run
 For Specific Tachidesk stable version (from v0.3.9 onwards)
 
      docker run -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:v0.3.9
+
+Alternative UID/GID. To run as an alternative UID and GID you need to run the container as root, and specify the `PUID` and `PGID` environment variables.
+
+     docker run -u 0 -e PUID=99 -e PGID=100 ghcr.io/suwayomi/tachidesk:preview
 
 # Credit
 

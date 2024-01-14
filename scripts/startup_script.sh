@@ -37,4 +37,4 @@ export EXTENSION_REPOS="${EXTENSION_REPOS:-"[]"}"
 
 envsubst < /home/suwayomi/server.conf.template > /home/suwayomi/.local/share/Tachidesk/server.conf
 
-exec java -jar "/home/suwayomi/startup/tachidesk_latest.jar";
+exec java -jar "/home/suwayomi/startup/tachidesk_latest.jar"
