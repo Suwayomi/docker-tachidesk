@@ -30,9 +30,8 @@ RUN apt-get update && \
 # Create a user to run as
 RUN groupadd --gid 1000 suwayomi && \
     useradd  --uid 1000 --gid suwayomi --no-log-init suwayomi && \
-    mkdir -p /home/suwayomi && \
-    chown -R suwayomi:suwayomi /home/suwayomi
-USER suwayomi
+    mkdir -p /home/suwayomi/.local/share/Tachidesk
+
 WORKDIR /home/suwayomi
 
 # Copy the app into the container
@@ -40,7 +39,17 @@ RUN curl -s --create-dirs -L $TACHIDESK_RELEASE_DOWNLOAD_URL -o /home/suwayomi/s
 COPY scripts/startup_script.sh /home/suwayomi/startup_script.sh
 COPY server.conf.template /home/suwayomi/server.conf.template
 
+# update permissions of files.
+# we grant o+rwx because we need to allow non default UIDs (eg via docker run ... --user)
+# to write to the directory to generate the server.conf
+RUN chown -R suwayomi:suwayomi /home/suwayomi && \
+    chmod 777 -R /home/suwayomi
+
+# /etc/passwd needs to be writable by non default UIDs to support updating
+RUN chmod o+rw /etc/passwd
+
+USER suwayomi
 EXPOSE 4567
-CMD ["/bin/sh", "/home/suwayomi/startup_script.sh"]
+CMD ["/home/suwayomi/startup_script.sh"]
 
 # vim: set ft=dockerfile:
