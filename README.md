@@ -21,6 +21,12 @@ Use the template [docker-compose.yml](./docker-compose.yml) in this repo for cre
 
 # Environment Variables
 
+> [!Tip]
+> Settings can be changed during runtime via the webUI.
+
+> [!CAUTION]
+> Providing an environment variable will overwrite the current value in the server.conf file.
+
 There are a number of environment variables available to configure Suwayomi:
 
 | Variable | Default | Description |
