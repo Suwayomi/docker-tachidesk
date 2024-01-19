@@ -26,6 +26,7 @@ sed -i -r "s/server.socksProxyHost = \"(.*)\"/server.socksProxyHost = \"${SOCKS_
 sed -i -r "s/server.socksProxyPort = \"(.*)\"/server.socksProxyPort = \"${SOCKS_PROXY_PORT:-\1}\"/" /home/suwayomi/.local/share/Tachidesk/server.conf
 
 # webUI
+sed -i -r "s/server.webUIEnabled = (.*)/server.webUIEnabled = ${WEB_UI_EABLED:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.webUIFlavor = \"(.*)\"/server.webUIFlavor = \"${WEB_UI_FLAVOR:-\1}\"/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.webUIChannel = \"(.*)\"/server.webUIChannel = \"${WEB_UI_CHANNEL:-\1}\"/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.webUIUpdateCheckInterval = (.*)/server.webUIUpdateCheckInterval = ${WEB_UI_UPDATE_INTERVAL:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
