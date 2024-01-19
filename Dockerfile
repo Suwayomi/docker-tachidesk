@@ -45,9 +45,6 @@ COPY server.conf.template /home/suwayomi/server.conf.template
 RUN chown -R suwayomi:suwayomi /home/suwayomi && \
     chmod 777 -R /home/suwayomi
 
-# /etc/passwd needs to be writable by non default UIDs to support updating
-RUN chmod o+rw /etc/passwd
-
 USER suwayomi
 EXPOSE 4567
 CMD ["/home/suwayomi/startup_script.sh"]

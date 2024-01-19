@@ -35,26 +35,6 @@ export BACKUP_INTERVAL="${BACKUP_INTERVAL:-1}"
 export BACKUP_TTL="${BACKUP_TTL:-14}"
 export EXTENSION_REPOS="${EXTENSION_REPOS:-"[]"}"
 
-USERNAME="suwayomi"
-HOME="/home/${USERNAME}"
-
-# add UID/GID to /etc/passwd if missing, in order for Java's user.home property to work correctly with non default UIDs.
-if ! whoami  >/dev/null 2>&1; then
-  if [ -w /etc/passwd ]; then
-    echo "Adding user ${USERNAME} with current UID:GID $(id -u):$(id -g) to /etc/passwd"
-    # Remove existing entry with user first.
-    # cannot use sed -i because we do not have permission to write new
-    # files into /etc
-    sed  "/${USERNAME}:x/d" /etc/passwd > /tmp/passwd
-    # add our user with our current user ID into passwd
-    echo "${USERNAME}:x:$(id -u):$(id -g):${USERNAME} user:${HOME}:/bin/bash" >> /tmp/passwd
-    # overwrite existing contents with new contents (cannot replace the
-    # file due to permissions)
-    cat /tmp/passwd > /etc/passwd
-    rm /tmp/passwd
-  fi
-fi
-
 envsubst < /home/suwayomi/server.conf.template > /home/suwayomi/.local/share/Tachidesk/server.conf
 
-exec java -jar "/home/suwayomi/startup/tachidesk_latest.jar";
+exec java -Duser.home=/home/suwayomi -jar "/home/suwayomi/startup/tachidesk_latest.jar";
