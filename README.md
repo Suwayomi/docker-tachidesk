@@ -53,6 +53,7 @@ There are a number of environment variables available to configure Suwayomi:
 | **BACKUP_TIME** | `"00:00"` | Range: hour: 0-23, minute: 0-59 - Time of day at which the automated backup should be triggered |
 | **BACKUP_INTERVAL** | `1` | # Time in days - 0 to disable it - range: 1 <= n < ∞ - Interval in which the server will automatically create a backup |
 | **BACKUP_TTL** | `14` | # Time in days - 0 to disable it - range: 1 <= n < ∞ - How long backup files will be kept before they will get deleted |
+| **GENERATE_CONFIG** | `true` | If true, server.conf is generating using the env-vars defined. If false, you can provide your own server.conf in a volume. |
 
 # Docker tags
 
