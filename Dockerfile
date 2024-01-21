@@ -27,6 +27,12 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# install unzip to unzip the server-reference.conf from the jar
+RUN apt-get update && \
+    apt-get -y install -y unzip && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 # Create a user to run as
 RUN groupadd --gid 1000 suwayomi && \
     useradd  --uid 1000 --gid suwayomi --no-log-init suwayomi && \
@@ -36,8 +42,8 @@ WORKDIR /home/suwayomi
 
 # Copy the app into the container
 RUN curl -s --create-dirs -L $TACHIDESK_RELEASE_DOWNLOAD_URL -o /home/suwayomi/startup/tachidesk_latest.jar
+COPY scripts/create_server_conf.sh /home/suwayomi/create_server_conf.sh
 COPY scripts/startup_script.sh /home/suwayomi/startup_script.sh
-COPY server.conf.template /home/suwayomi/server.conf.template
 
 # update permissions of files.
 # we grant o+rwx because we need to allow non default UIDs (eg via docker run ... --user)
