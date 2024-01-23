@@ -62,8 +62,11 @@ There are a number of environment variables available to configure Suwayomi:
 |       **UPDATE_INTERVAL**        |    `-`    |                 Time in hours - 0 to disable it - (doesn't have to be full hours e.g. 12.5) - range: 6 <= n < ∞ - Interval in which the global update will be automatically triggered                 |
 |      **UPDATE_MANGA_INFO**       |    `-`    |                                                                        If manga info should be updated along with the chapters                                                                        |
 |         **BACKUP_TIME**          |    `-`    |                                                    Range: hour: 0-23, minute: 0-59 - Time of day at which the automated backup should be triggered                                                    |
-|       **BACKUP_INTERVAL**        |    `-`    |                                        # Time in days - 0 to disable it - range: 1 <= n < ∞ - Interval in which the server will automatically create a backup                                         |
-|          **BACKUP_TTL**          |    `-`    |                                        # Time in days - 0 to disable it - range: 1 <= n < ∞ - How long backup files will be kept before they will get deleted                                         |
+|       **BACKUP_INTERVAL**        |    `-`    |                                          Time in days - 0 to disable it - range: 1 <= n < ∞ - Interval in which the server will automatically create a backup                                         |
+|          **BACKUP_TTL**          |    `-`    |                                          Time in days - 0 to disable it - range: 1 <= n < ∞ - How long backup files will be kept before they will get deleted                                         |
+|    **FLARESOLVERR_ENABLED**      |    `-`    |                                                                         Whether FlareSolverr is enabled and avalible to use                                                                           |
+|      **FLARESOLVERR_URL**        |    `-`    |                                                                                  The URL of the FlareSolverr instance                                                                                 |
+|    **FLARESOLVERR_TIMEOUT**      |    `-`    |                                                               Time in seconds for FlareSolverr to timeout if the challenge is not solved                                                              |
 
 # Docker tags
 

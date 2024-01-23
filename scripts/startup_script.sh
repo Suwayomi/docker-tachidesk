@@ -66,4 +66,9 @@ sed -i -r "s/server.backupTime = (.*)/server.backupTime = ${BACKUP_TIME:-\1}/" /
 sed -i -r "s/server.backupInterval = (.*)/server.backupInterval = ${BACKUP_INTERVAL:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.backupTTL = (.*)/server.backupTTL = ${BACKUP_TTL:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 
+# cloudflare bypass
+sed -i -r "s/server.flareSolverrEnabled = (.*)/server.flareSolverrEnabled = ${FLARESOLVERR_ENABLED:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
+sed -i -r "s/server.flareSolverrUrl = \"(.*)\"/server.flareSolverrUrl = \"${FLARESOLVERR_URL:-\1}\"/" /home/suwayomi/.local/share/Tachidesk/server.conf
+sed -i -r "s/server.flareSolverrTimeout = (.*)/server.flareSolverrTimeout = ${FLARESOLVERR_TIMEOUT:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
+
 exec java -Duser.home=/home/suwayomi -jar "/home/suwayomi/startup/tachidesk_latest.jar";
