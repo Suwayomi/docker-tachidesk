@@ -2,7 +2,7 @@
 version: '3.7'
 services:
   suwayomi:
-    image: tachidesk:new
+    image: ghcr.io/suwayomi/tachidesk:preview
     environment:
       - TZ=Etc/UTC # Use TZ database name from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       - DEBUG=true
@@ -14,8 +14,18 @@ services:
       - BASIC_AUTH_ENABLED=true
       - BASIC_AUTH_USERNAME=manga
       - BASIC_AUTH_PASSWORD=hello123
+      - FLARESOLVERR_ENABLED=true
+      - FLARESOLVERR_URL="http:\/\/flaresolverr:8191"
     volumes:
       - ./data:/home/suwayomi/.local/share/Tachidesk
     ports:
       - "4567:4567"
     restart: on-failure:3
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - TZ=Etc/UTC # Use TZ database name from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    ports:
+      - "8191:8191"
+    restart: unless-stopped
