@@ -69,7 +69,9 @@ sed -i -r "s/server.backupTTL = (.*)/server.backupTTL = ${BACKUP_TTL:-\1}/" /hom
 
 # cloudflare bypass
 # escape url for sed
-export FLARESOLVERR_URL=$(echo "${FLARESOLVERR_URL:-\1}" | sed 's/[\/&]/\\&/g')
+if [ -z ${FLARESOLVERR_URL+x} ]; then
+  export FLARESOLVERR_URL=$(echo "${FLARESOLVERR_URL}" | sed 's/[\/&]/\\&/g')
+fi
 sed -i -r "s/server.flareSolverrEnabled = (.*)/server.flareSolverrEnabled = ${FLARESOLVERR_ENABLED:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.flareSolverrUrl = \"(.*)\"/server.flareSolverrUrl = \"${FLARESOLVERR_URL:-\1}\"/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.flareSolverrTimeout = (.*)/server.flareSolverrTimeout = ${FLARESOLVERR_TIMEOUT:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
