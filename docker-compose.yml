@@ -2,7 +2,7 @@
 version: '3.7'
 services:
   suwayomi:
-    image: tachidesk:new
+    image: ghcr.io/suwayomi/tachidesk:preview
     environment:
       - TZ=Etc/UTC # Use TZ database name from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       - DEBUG=true
