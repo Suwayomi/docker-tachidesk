@@ -76,5 +76,7 @@ fi
 sed -i -r "s/server.flareSolverrEnabled = (.*)/server.flareSolverrEnabled = ${FLARESOLVERR_ENABLED:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.flareSolverrUrl = \"(.*)\"/server.flareSolverrUrl = \"${FLARESOLVERR_URL:-\1}\"/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.flareSolverrTimeout = (.*)/server.flareSolverrTimeout = ${FLARESOLVERR_TIMEOUT:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
+sed -i -r "s/server.flareSolverrSessionName = \"(.*)\"/server.flareSolverrSessionName = \"${FLARESOLVERR_SESSION_NAME:-\1}\"/" /home/suwayomi/.local/share/Tachidesk/server.conf
+sed -i -r "s/server.flareSolverrSessionTtl = (.*)/server.flareSolverrSessionTtl = ${FLARESOLVERR_SESSION_TTL:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 
 exec java -Duser.home=/home/suwayomi -jar "/home/suwayomi/startup/tachidesk_latest.jar";
