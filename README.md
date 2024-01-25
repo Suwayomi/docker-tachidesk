@@ -67,6 +67,8 @@ There are a number of environment variables available to configure Suwayomi:
 |     **FLARESOLVERR_ENABLED**     |          `false`          |                                                                         Whether FlareSolverr is enabled and available to use                                                                          |
 |       **FLARESOLVERR_URL**       | `http:\/\/localhost:8191` |                                                                    The URL of the FlareSolverr instance, the URL must be escaped!                                                                     |
 |     **FLARESOLVERR_TIMEOUT**     |           `60`            |                                                              Time in seconds for FlareSolverr to timeout if the challenge is not solved                                                               |
+|  **FLARESOLVERR_SESSION_NAME**   |        `suwayomi`         |                                                                   The name of the session that Suwayomi will use with FlareSolverr                                                                    |
+|   **FLARESOLVERR_SESSION_TTL**   |           `15`            |                                                                             The time to live for the FlareSolverr session                                                                             |
 
 # Docker tags
 
