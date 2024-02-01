@@ -15,7 +15,7 @@ services:
       - BASIC_AUTH_USERNAME=manga
       - BASIC_AUTH_PASSWORD=hello123
       - FLARESOLVERR_ENABLED=true
-      - FLARESOLVERR_URL="http://flaresolverr:8191"
+      - FLARESOLVERR_URL=http://flaresolverr:8191
     volumes:
       - ./data:/home/suwayomi/.local/share/Tachidesk
     ports:
