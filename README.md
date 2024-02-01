@@ -22,14 +22,14 @@ Use the template [docker-compose.yml](./docker-compose.yml) in this repo for cre
 
 # Environment Variables
 
-> [!NOTE]
-> See [server-reference.conf](https://github.com/Suwayomi/Suwayomi-Server/blob/master/server/src/main/resources/server-reference.conf) in the [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server) repository for the default values
+> [!CAUTION]
+> Providing an environment variable will <b>overwrite</b> the current setting value when starting the container.
 
 > [!Tip]
-> Settings can be changed during runtime via the webUI.
+> Most of the time you don't need to use environment variables, instead settings can be changed during runtime via the webUI. (which will be rendered useless when providing an environment variable)
 
-> [!CAUTION]
-> Providing an environment variable will overwrite the current value in the server.conf file.
+> [!NOTE]
+> See [server-reference.conf](https://github.com/Suwayomi/Suwayomi-Server/blob/master/server/src/main/resources/server-reference.conf) in the [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server) repository for the default values
 
 There are a number of environment variables available to configure Suwayomi:
 
