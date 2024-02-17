@@ -35,7 +35,7 @@ sed -i -r "s/server.webUIUpdateCheckInterval = (.*)/server.webUIUpdateCheckInter
 sed -i -r "s/server.downloadAsCbz = (.*)/server.downloadAsCbz = ${DOWNLOAD_AS_CBZ:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.autoDownloadNewChapters = (.*)/server.autoDownloadNewChapters = ${AUTO_DOWNLOAD_CHAPTERS:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.excludeEntryWithUnreadChapters = (.*)/server.excludeEntryWithUnreadChapters = ${AUTO_DOWNLOAD_EXCLUDE_UNREAD:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
-sed -i -r "s/server.autoDownloadAheadLimit = (.*)/server.autoDownloadAheadLimit = ${AUTO_DOWNLOAD_AHEAD_LIMIT:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
+sed -i -r "s/server.autoDownloadNewChaptersLimit = (.*)/server.autoDownloadNewChaptersLimit = ${AUTO_DOWNLOAD_NEW_CHAPTERS_LIMIT:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 
 # extension repos
 if [ -n "$EXTENSION_REPOS" ]; then
