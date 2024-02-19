@@ -62,7 +62,7 @@ sed -i -r "s/server.debugLogsEnabled = (.*)/server.debugLogsEnabled = ${DEBUG:-\
 sed -i -r "s/server.gqlDebugLogsEnabled = (.*)/server.gqlDebugLogsEnabled = ${GQL_DEBUG:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 
 # backup
-sed -i -r "s/server.backupTime = (.*)|server.backupTime = ${BACKUP_TIME:-\1}|" /home/suwayomi/.local/share/Tachidesk/server.conf
+sed -i -r "s|server.backupTime = \"(.*)\"|server.backupTime = ${BACKUP_TIME:-\1}\"|" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.backupInterval = (.*)/server.backupInterval = ${BACKUP_INTERVAL:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.backupTTL = (.*)/server.backupTTL = ${BACKUP_TTL:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 
