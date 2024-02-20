@@ -15,9 +15,9 @@ on:
         type: boolean
     secrets:
       DISCORD_TACHIDESK_WEBHOOK_ID:
-        required: true
+        required: false
       DISCORD_TACHIDESK_TOKEN:
-        required: true
+        required: false
 
 env:
   server_repo: ${{ inputs.tachidesk_release_type == 'stable' && 'Suwayomi-Server' || 'Suwayomi-Server-preview' }}
@@ -64,7 +64,7 @@ jobs:
           echo "build_date=$build_date" >> $GITHUB_OUTPUT
 
       # this only builds the amd64 version of the image, which is fine as that's
-      # all that is needed to test the container on Github Actions' build servers (which are running amd64 CPUs)
+      # all that is needed to test the container on GitHub Actions' build servers (which are running amd64 CPUs)
       - name: Build container image to test
         uses: docker/build-push-action@v4
         with:
@@ -77,8 +77,10 @@ jobs:
             TACHIDESK_DOCKER_GIT_COMMIT=${{ steps.get_latest_release_metadata.outputs.tachidesk_docker_git_commit }}
           tags: ${{ env.test_image_tag }}
 
-      # Launch the container and then hit the about API to verifiy that it can start up correctly.
+      # Launch the container and then hit the 'about' API to verify that it can start up correctly.
       - name: Test new container image
+        env:
+          DO_UPLOAD: ${{ inputs.do_upload }}
         run: |
             mkdir -p ${{ runner.temp }}/tachidesk
             chmod -R 777 ${{ runner.temp }}/tachidesk
@@ -88,14 +90,16 @@ jobs:
             docker logs suwayomi_test > ${{ runner.temp }}/tachidesk.log
             if [[ $val != "Suwayomi-Server" ]]; then
               echo "Did not find Suwayomi-Server in server response: ${val}"
-              curl \
-                -F 'payload_json={"username": "Github", "content": "<@855022649926221854>\nDocker ${{ inputs.tachidesk_release_type }} image dry run failed! 😢 Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}. [See the full run log](${{ env.this_actions_run_url }})"}' \
-                -F "file1=@${{ runner.temp }}/tachidesk.log" \
-                "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
+              if [[ $DO_UPLOAD == "true" ]]; then
+                  curl \
+                    -F 'payload_json={"username": "Github", "content": "<@855022649926221854>\nDocker ${{ inputs.tachidesk_release_type }} image dry run failed! 😢 Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}. [See the full run log](${{ env.this_actions_run_url }})"}' \
+                    -F "file1=@${{ runner.temp }}/tachidesk.log" \
+                    "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
+              fi
               exit 1
             fi
 
-      # Now we build for all of the platforms we support here. NB: the amd64
+      # Now we build for all the platforms we support here. NB: the amd64
       # won't be rebuilt since the local docker daemon has that still cached
       - name: Push container image to registry
         if: inputs.do_upload
