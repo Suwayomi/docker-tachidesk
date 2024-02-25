@@ -10,7 +10,7 @@ Docker Releases - https://github.com/suwayomi/docker-tachidesk/pkgs/container/ta
 
 Dockerfile - https://github.com/suwayomi/docker-tachidesk
 
-_**Tachidesk data location - /home/suwayomi/.local/share/Tachidesk**_
+_**Suwayomi data location - /home/suwayomi/.local/share/Tachidesk**_
 
 Docker images are mutli-arch (linux/amd64, linux/arm/v7, linux/arm64, linux/ppc64le, linux/s390x) and has small size based on Ubuntu linux.
 
