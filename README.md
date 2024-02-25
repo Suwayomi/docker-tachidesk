@@ -4,7 +4,7 @@
 |:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | [![Build Docker Images](https://github.com/suwayomi/docker-tachidesk/actions/workflows/build_container_images.yml/badge.svg)](https://github.com/suwayomi/docker-tachidesk/actions/workflows/build_container_images.yml) [![Docker Pulls](https://img.shields.io/badge/dynamic/json?url=https://github.com/suwayomi/docker-tachidesk/raw/main/scripts/tachidesk_version.json&label=docker_pulls&query=$.total_downloads&color=blue)](https://github.com/orgs/suwayomi/packages/container/package/tachidesk) | [![Latest](https://img.shields.io/badge/dynamic/json?url=https://github.com/suwayomi/docker-tachidesk/raw/main/scripts/tachidesk_version.json&label=version&query=$.stable&color=blue)](https://github.com/orgs/suwayomi/packages/container/package/tachidesk/) | [![Preview](https://img.shields.io/badge/dynamic/json?url=https://github.com/suwayomi/docker-tachidesk/raw/main/scripts/tachidesk_version.json&label=version&query=$.preview&color=blue)](https://github.com/orgs/suwayomi/packages/container/package/tachidesk) | [![Discord](https://img.shields.io/discord/801021177333940224.svg?label=discord&labelColor=7289da&color=2c2f33&style=flat)](https://discord.gg/DDZdqZWaHA) |
 
-Run [Tachidesk-Server](https://github.com/Suwayomi/Tachidesk-Server) inside docker container as non-root user. The server will be running on http://localhost:4567 open this url in your browser.
+Run [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server) inside docker container as non-root user. The server will be running on http://localhost:4567 open this url in your browser.
 
 Docker Releases - https://github.com/suwayomi/docker-tachidesk/pkgs/container/tachidesk
 
@@ -102,21 +102,21 @@ Change the default UTC timezone. Use TZ database name from [Timezone list](https
 
     docker run -e "TZ=Europe/London" -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:stable
 
-For Tachidesk Preview version
+For Suwayomi Preview version
 
      docker run -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:preview
 
-Persistent data of tachidesk on subsequent run
+Persistent data of Suwayomi on subsequent run
 
     docker run -p 127.0.0.1:4567:4567 -v <folder path>:/./home/suwayomi/.local/share/Tachidesk ghcr.io/suwayomi/tachidesk
 
-For Specific Tachidesk stable version (from v0.3.9 onwards)
+For Specific Suwayomi-Server stable version
 
-     docker run -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:v0.3.9
+     docker run -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:v1.0.0
 
 # Credit
 
-[Tachidesk-Server](https://github.com/Suwayomi/Tachidesk-Server) is licensed under `MPL v. 2.0`.
+[Suwayomi-Server](https://github.com/Suwayomi/Tachidesk-Server) is licensed under `MPL v. 2.0`.
 
 # License
 
