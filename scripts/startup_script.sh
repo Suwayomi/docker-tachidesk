@@ -32,6 +32,7 @@ sed -i -r "s/server.webUIChannel = \"(.*)\"/server.webUIChannel = \"${WEB_UI_CHA
 sed -i -r "s/server.webUIUpdateCheckInterval = (.*)/server.webUIUpdateCheckInterval = ${WEB_UI_UPDATE_INTERVAL:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 
 # downloader
+sed -i -r "s/server.downloadsPath = (.*)/server.downloadsPath = ${DOWNLOADS_PATH:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.downloadAsCbz = (.*)/server.downloadAsCbz = ${DOWNLOAD_AS_CBZ:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.autoDownloadNewChapters = (.*)/server.autoDownloadNewChapters = ${AUTO_DOWNLOAD_CHAPTERS:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.excludeEntryWithUnreadChapters = (.*)/server.excludeEntryWithUnreadChapters = ${AUTO_DOWNLOAD_EXCLUDE_UNREAD:-\1}/" /home/suwayomi/.local/share/Tachidesk/server.conf
