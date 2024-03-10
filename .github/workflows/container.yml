@@ -78,17 +78,23 @@ jobs:
           tags: ${{ env.test_image_tag }}
 
       # Launch the container and then hit the 'about' API to verify that it can start up correctly.
-      - name: Test new container image
+      - name: Test new container image without passing environment variables
         env:
           DO_UPLOAD: ${{ inputs.do_upload }}
         run: |
             mkdir -p ${{ runner.temp }}/tachidesk
             chmod -R 777 ${{ runner.temp }}/tachidesk
-            docker run --rm -d -p 127.0.0.1:4568:4567 -v ${{ runner.temp }}/tachidesk:/home/suwayomi/.local/share/Tachidesk --name=suwayomi_test ${{ env.test_image_tag }}
+            docker run -d -p 127.0.0.1:4568:4567 -v ${{ runner.temp }}/tachidesk:/home/suwayomi/.local/share/Tachidesk --name=suwayomi_test ${{ env.test_image_tag }}
             sleep 15
             curl -s 127.0.0.1:4568/api/v1/settings/about/ && val=$(curl -s 127.0.0.1:4568/api/v1/settings/about/ | grep -o "Suwayomi-Server" | sort --unique)
+            docker stop suwayomi_test
             docker logs suwayomi_test > ${{ runner.temp }}/tachidesk.log
+            docker rm suwayomi_test
             if [[ $val != "Suwayomi-Server" ]]; then
+              echo "Container logs:"
+              echo "=============================="
+              cat ${{ runner.temp }}/tachidesk.log
+              echo "=============================="
               echo "Did not find Suwayomi-Server in server response: ${val}"
               if [[ $DO_UPLOAD == "true" ]]; then
                   curl \
@@ -98,6 +104,68 @@ jobs:
               fi
               exit 1
             fi
+
+      - name: Test new container image with passing environment variables
+        env:
+          DO_UPLOAD: ${{ inputs.do_upload }}
+        run: |
+          mkdir -p ${{ runner.temp }}/tachidesk_env_vars
+          chmod -R 777 ${{ runner.temp }}/tachidesk_env_vars
+          docker run -d -p 127.0.0.1:4568:4567 -v ${{ runner.temp }}/tachidesk_env_vars:/home/suwayomi/.local/share/Tachidesk \
+            -e BIND_IP=0.0.0.0 \
+            -e BIND_PORT=4567 \
+            -e SOCKS_PROXY_ENABLED=false \
+            -e SOCKS_PROXY_HOST=socks_host \
+            -e SOCKS_PROXY_PORT=socks_port \
+            -e WEB_UI_ENABLED=true \
+            -e WEB_UI_FLAVOR=WebUI \
+            -e WEB_UI_CHANNEL=preview \
+            -e WEB_UI_UPDATE_INTERVAL=2 \
+            -e DOWNLOAD_AS_CBZ=true \
+            -e AUTO_DOWNLOAD_CHAPTERS=true \
+            -e AUTO_DOWNLOAD_EXCLUDE_UNREAD=false \
+            -e AUTO_DOWNLOAD_NEW_CHAPTERS_LIMIT=5 \
+            -e EXTENSION_REPOS=[\"http://github.com/orginazation-name/repo-name\",\"http://github.com/orginazation-name-2/repo-name-2\"] \
+            -e MAX_SOURCES_IN_PARALLEL=12 \
+            -e UPDATE_EXCLUDE_UNREAD=false \
+            -e UPDATE_EXCLUDE_STARTED=false \
+            -e UPDATE_EXCLUDE_COMPLETED=false \
+            -e UPDATE_INTERVAL=30 \
+            -e UPDATE_MANGA_INFO=true \
+            -e BASIC_AUTH_ENABLED=true \
+            -e BASIC_AUTH_USERNAME=manga \
+            -e BASIC_AUTH_PASSWORD=hello123 \
+            -e DEBUG=true \
+            -e GQL_DEBUG=false \
+            -e BACKUP_TIME=13:37 \
+            -e BACKUP_INTERVAL=2 \
+            -e BACKUP_TTL=31 \
+            -e FLARESOLVERR_ENABLED=true \
+            -e FLARESOLVERR_URL=http://flaresolverr:8191 \
+            -e FLARESOLVERR_TIMEOUT=30 \
+            -e FLARESOLVERR_SESSION_NAME=session-name \
+            -e FLARESOLVERR_SESSION_TTL=120 \
+            --name=suwayomi_test \
+            ${{ env.test_image_tag }}
+          sleep 15
+          curl -s http://manga:hello123@127.0.0.1:4568/api/v1/settings/about/ && val_env_vars=$(curl -s http://manga:hello123@127.0.0.1:4568/api/v1/settings/about/ | grep -o "Suwayomi-Server" | sort --unique)
+          docker stop suwayomi_test
+          docker logs suwayomi_test > ${{ runner.temp }}/tachidesk_env_vars.log
+          docker rm suwayomi_test
+          if [[ $val_env_vars != "Suwayomi-Server" ]]; then
+            echo "Container logs:"
+            echo "=============================="
+            cat ${{ runner.temp }}/tachidesk_env_vars.log
+            echo "=============================="
+            echo "Did not find Suwayomi-Server in server response: ${val_env_vars}"
+            if [[ $DO_UPLOAD == "true" ]]; then
+                curl \
+                  -F 'payload_json={"username": "Github", "content": "<@855022649926221854>\nDocker ${{ inputs.tachidesk_release_type }} image dry run failed! 😢 Version - ${{ steps.get_latest_release_metadata.outputs.release_tag }}. [See the full run log](${{ env.this_actions_run_url }})"}' \
+                  -F "file1=@${{ runner.temp }}/tachidesk_env_vars.log" \
+                  "https://discord.com/api/webhooks/${{ secrets.DISCORD_TACHIDESK_WEBHOOK_ID }}/${{ secrets.DISCORD_TACHIDESK_TOKEN }}"
+            fi
+            exit 1
+          fi
 
       # Now we build for all the platforms we support here. NB: the amd64
       # won't be rebuilt since the local docker daemon has that still cached
