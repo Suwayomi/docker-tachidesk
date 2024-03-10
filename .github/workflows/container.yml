@@ -91,6 +91,10 @@ jobs:
             docker logs suwayomi_test > ${{ runner.temp }}/tachidesk.log
             docker rm suwayomi_test
             if [[ $val != "Suwayomi-Server" ]]; then
+              echo "Container logs:"
+              echo "=============================="
+              cat ${{ runner.temp }}/tachidesk.log
+              echo "=============================="
               echo "Did not find Suwayomi-Server in server response: ${val}"
               if [[ $DO_UPLOAD == "true" ]]; then
                   curl \
