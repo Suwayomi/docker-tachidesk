@@ -15,6 +15,8 @@ export TZ="${TZ:-Etc/UTC}"
 sed -i -r "s/server.initialOpenInBrowserEnabled = ([0-9]+|[a-zA-Z]+)( #)?/server.initialOpenInBrowserEnabled = false #/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.systemTrayEnabled = ([0-9]+|[a-zA-Z]+)( #)?/server.systemTrayEnabled = false #/" /home/suwayomi/.local/share/Tachidesk/server.conf
 
+# !!! IMPORTANT: make sure to add new env variables to the container.yml workflow step testing the container with providing environment variables
+
 # Overwrite configuration values with environment variables
 # the "( #)?" at the end of the regex prevents the settings comment from getting removed
 # some settings might not have a comment, however, "sed" does not support non matching groups in a regex, thus, an empty
