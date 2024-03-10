@@ -84,10 +84,12 @@ jobs:
         run: |
             mkdir -p ${{ runner.temp }}/tachidesk
             chmod -R 777 ${{ runner.temp }}/tachidesk
-            docker run --rm -d -p 127.0.0.1:4568:4567 -v ${{ runner.temp }}/tachidesk:/home/suwayomi/.local/share/Tachidesk --name=suwayomi_test ${{ env.test_image_tag }}
+            docker run -d -p 127.0.0.1:4568:4567 -v ${{ runner.temp }}/tachidesk:/home/suwayomi/.local/share/Tachidesk --name=suwayomi_test ${{ env.test_image_tag }}
             sleep 15
             curl -s 127.0.0.1:4568/api/v1/settings/about/ && val=$(curl -s 127.0.0.1:4568/api/v1/settings/about/ | grep -o "Suwayomi-Server" | sort --unique)
+            docker stop suwayomi_test
             docker logs suwayomi_test > ${{ runner.temp }}/tachidesk.log
+            docker rm suwayomi_test
             if [[ $val != "Suwayomi-Server" ]]; then
               echo "Did not find Suwayomi-Server in server response: ${val}"
               if [[ $DO_UPLOAD == "true" ]]; then
