@@ -42,6 +42,7 @@ sed -i -r "s/server.downloadAsCbz = ([0-9]+|[a-zA-Z]+)( #)?/server.downloadAsCbz
 sed -i -r "s/server.autoDownloadNewChapters = ([0-9]+|[a-zA-Z]+)( #)?/server.autoDownloadNewChapters = ${AUTO_DOWNLOAD_CHAPTERS:-\1} #/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.excludeEntryWithUnreadChapters = ([0-9]+|[a-zA-Z]+)( #)?/server.excludeEntryWithUnreadChapters = ${AUTO_DOWNLOAD_EXCLUDE_UNREAD:-\1} #/" /home/suwayomi/.local/share/Tachidesk/server.conf
 sed -i -r "s/server.autoDownloadNewChaptersLimit = ([0-9]+|[a-zA-Z]+)( #)?/server.autoDownloadNewChaptersLimit = ${AUTO_DOWNLOAD_NEW_CHAPTERS_LIMIT:-\1} #/" /home/suwayomi/.local/share/Tachidesk/server.conf
+sed -i -r "s/server.autoDownloadIgnoreReUploads = ([0-9]+|[a-zA-Z]+)( #)?/server.autoDownloadIgnoreReUploads = ${AUTO_DOWNLOAD_IGNORE_REUPLOADS:-\1} #/" /home/suwayomi/.local/share/Tachidesk/server.conf
 
 # extension repos
 if [ -n "$EXTENSION_REPOS" ]; then
