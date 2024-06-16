@@ -85,36 +85,6 @@ The latest stable release of the server. Also tagged as `:stable`.
 
 The latest preview release of the server. Can be buggy!
 
-# Docker commands
-
-Expose to localhost ip
-
-    docker run -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:stable
-
-Expose to specific ip
-
-    docker run -p 192.168.x.x:4567:4567 ghcr.io/suwayomi/tachidesk:stable
-
-Expose to all ips
-
-    docker run -p 4567:4567 ghcr.io/suwayomi/tachidesk:stable
-
-Change the default UTC timezone. Use TZ database name from [Timezone list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
-
-    docker run -e "TZ=Europe/London" -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:stable
-
-For Suwayomi Preview version
-
-     docker run -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:preview
-
-Persistent data of Suwayomi on subsequent run
-
-    docker run -p 127.0.0.1:4567:4567 -v <folder path>:/./home/suwayomi/.local/share/Tachidesk ghcr.io/suwayomi/tachidesk
-
-For Specific Suwayomi-Server stable version
-
-     docker run -p 127.0.0.1:4567:4567 ghcr.io/suwayomi/tachidesk:v1.0.0
-
 # Credit
 
 [Suwayomi-Server](https://github.com/Suwayomi/Tachidesk-Server) is licensed under `MPL v. 2.0`.
