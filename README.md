@@ -71,6 +71,20 @@ There are a number of environment variables available to configure Suwayomi:
 |    **FLARESOLVERR_SESSION_NAME**     |       `suwayomi`        |                                                                   The name of the session that Suwayomi will use with FlareSolverr                                                                    |
 |     **FLARESOLVERR_SESSION_TTL**     |          `15`           |                                                                             The time to live for the FlareSolverr session                                                                             |
 
+### Downloads Folder
+We do not allow configuration of the downloads folder, since Docker Volumes can handle that instead, here is an example of a docker-compose.yaml that has downloads volume configuration:
+```yaml
+  tachidesk:
+    image: ghcr.io/suwayomi/tachidesk:stable
+    container_name: tachidesk
+    volumes: # The order matters! Make sure the downloads is first in the volume list or it will not work!
+      - /example/tachidesk/downloads:/home/suwayomi/.local/share/Tachidesk/downloads
+      - /example/tachidesk/files:/home/suwayomi/.local/share/Tachidesk
+    ports:
+      - 4568:4567
+    restart: unless-stopped
+```
+
 # Docker tags
 
 ## Latest
