@@ -174,7 +174,7 @@ jobs:
         if: inputs.do_upload
         uses: docker/build-push-action@v6
         with:
-          platforms: linux/amd64,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x
+          platforms: linux/amd64,linux/arm64/v8,linux/ppc64le,linux/s390x
           push: true
           build-args: |
             BUILD_DATE=${{ steps.get_latest_release_metadata.outputs.build_date }}
