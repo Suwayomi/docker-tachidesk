@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11-jre-jammy
+FROM eclipse-temurin:11.0.25_9-jre-jammy
 
 ARG BUILD_DATE
 ARG TACHIDESK_RELEASE_TAG
