@@ -137,7 +137,6 @@ jobs:
             -e BASIC_AUTH_USERNAME=manga \
             -e BASIC_AUTH_PASSWORD=hello123 \
             -e DEBUG=true \
-            -e GQL_DEBUG=false \
             -e BACKUP_TIME=13:37 \
             -e BACKUP_INTERVAL=2 \
             -e BACKUP_TTL=31 \

@@ -66,7 +66,6 @@ sed -i -r "s/server.basicAuthPassword = \"(.*?)\"( #)?/server.basicAuthPassword 
 
 # misc
 sed -i -r "s/server.debugLogsEnabled = ([0-9]+|[a-zA-Z]+)( #)?/server.debugLogsEnabled = ${DEBUG:-\1} #/" /home/suwayomi/.local/share/Tachidesk/server.conf
-sed -i -r "s/server.gqlDebugLogsEnabled = ([0-9]+|[a-zA-Z]+)( #)?/server.gqlDebugLogsEnabled = ${GQL_DEBUG:-\1} #/" /home/suwayomi/.local/share/Tachidesk/server.conf
 
 # backup
 sed -i -r "s/server.backupTime = \"(.*?)\"( #)?/server.backupTime = \"${BACKUP_TIME:-\1}\" #/" /home/suwayomi/.local/share/Tachidesk/server.conf
