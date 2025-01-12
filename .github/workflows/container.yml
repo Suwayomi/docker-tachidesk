@@ -201,6 +201,7 @@ jobs:
           if [ "${{ inputs.tachidesk_release_type }}" == "stable" ]; then
             docker tag ghcr.io/suwayomi/tachidesk:${{ inputs.tachidesk_release_type }}-slim ghcr.io/suwayomi/tachidesk:latest-slim
           fi
+          docker image rm ${{ env.test_image_tag }}
           docker image push "ghcr.io/suwayomi/tachidesk" --all-tags
 
       - name: Send a Discord message through the webhook (preview build)
