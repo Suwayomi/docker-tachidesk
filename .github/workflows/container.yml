@@ -190,7 +190,7 @@ jobs:
         uses: kitabisa/docker-slim-action@v1
         env:
           DSLIM_HTTP_PROBE: false
-          DSLIM_PRESERVE_PATH: /opt/java/openjdk/lib,/home/suwayomi/.local/share/Tachidesk
+          DSLIM_PRESERVE_PATH: /opt/java/openjdk/lib,/opt/java/openjdk/conf,/home/suwayomi/.local/share/Tachidesk
         with:
           target: ghcr.io/suwayomi/tachidesk:${{ inputs.tachidesk_release_type }}
           tag: '${{ inputs.tachidesk_release_type }}-slim'
