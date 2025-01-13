@@ -186,21 +186,21 @@ jobs:
             ghcr.io/suwayomi/tachidesk:${{ inputs.tachidesk_release_type }}
             ghcr.io/suwayomi/tachidesk:${{ steps.get_latest_release_metadata.outputs.release_tag }}
 
-      - name: Create slim container
-        uses: kitabisa/docker-slim-action@v1
-        env:
-          DSLIM_HTTP_PROBE: false
-          DSLIM_PRESERVE_PATH: /opt/java/openjdk/lib,/opt/java/openjdk/conf,/home/suwayomi/.local/share/Tachidesk
-        with:
-          target: ghcr.io/suwayomi/tachidesk:${{ inputs.tachidesk_release_type }}
-          tag: '${{ inputs.tachidesk_release_type }}-slim'
+      # - name: Create slim container
+      #   uses: kitabisa/docker-slim-action@v1
+      #   env:
+      #     DSLIM_HTTP_PROBE: false
+      #     DSLIM_PRESERVE_PATH: /opt/java/openjdk/lib,/opt/java/openjdk/conf,/home/suwayomi/.local/share/Tachidesk
+      #   with:
+      #     target: ghcr.io/suwayomi/tachidesk:${{ inputs.tachidesk_release_type }}
+      #     tag: '${{ inputs.tachidesk_release_type }}-slim'
 
       - name: Tag slim container and push registery to repository
         run: |
-          docker tag ghcr.io/suwayomi/tachidesk:${{ inputs.tachidesk_release_type }}-slim ghcr.io/suwayomi/tachidesk:${{ steps.get_latest_release_metadata.outputs.release_tag }}-slim
-          if [ "${{ inputs.tachidesk_release_type }}" == "stable" ]; then
-            docker tag ghcr.io/suwayomi/tachidesk:${{ inputs.tachidesk_release_type }}-slim ghcr.io/suwayomi/tachidesk:latest-slim
-          fi
+          # docker tag ghcr.io/suwayomi/tachidesk:${{ inputs.tachidesk_release_type }}-slim ghcr.io/suwayomi/tachidesk:${{ steps.get_latest_release_metadata.outputs.release_tag }}-slim
+          # if [ "${{ inputs.tachidesk_release_type }}" == "stable" ]; then
+          #   docker tag ghcr.io/suwayomi/tachidesk:${{ inputs.tachidesk_release_type }}-slim ghcr.io/suwayomi/tachidesk:latest-slim
+          # fi
           docker image rm ${{ env.test_image_tag }}
           docker image push "ghcr.io/suwayomi/tachidesk" --all-tags
 
