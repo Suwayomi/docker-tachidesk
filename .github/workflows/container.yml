@@ -21,7 +21,7 @@ on:
 
 env:
   server_repo: ${{ inputs.tachidesk_release_type == 'stable' && 'Suwayomi-Server' || 'Suwayomi-Server-preview' }}
-  test_image_tag: ghcr.io/suwayomi/tachidesk:testing
+  test_image_tag: ghcr.io/suwayomi/tachidesk-test:testing
   this_actions_run_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
 jobs:
@@ -201,7 +201,6 @@ jobs:
           # if [ "${{ inputs.tachidesk_release_type }}" == "stable" ]; then
           #   docker tag ghcr.io/suwayomi/tachidesk:${{ inputs.tachidesk_release_type }}-slim ghcr.io/suwayomi/tachidesk:latest-slim
           # fi
-          docker image rm ${{ env.test_image_tag }}
           docker image push "ghcr.io/suwayomi/tachidesk" --all-tags
 
       - name: Send a Discord message through the webhook (preview build)
