@@ -12,7 +12,7 @@ Dockerfile - https://github.com/Suwayomi/Suwayomi-Server-docker
 
 _**Suwayomi data location - /home/suwayomi/.local/share/Tachidesk**_
 
-Docker images are mutli-arch (linux/amd64, linux/arm/v7, linux/arm64, linux/ppc64le, linux/s390x) and has small size based on Ubuntu linux.
+Docker images are mutli-arch (linux/amd64, linux/arm64/v8, linux/ppc64le, linux/s390x, linux/riscv64) and has small size based on Ubuntu linux.
 
 Logs are sent to stdout and are not written to disk.
 
