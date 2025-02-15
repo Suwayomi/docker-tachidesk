@@ -2,7 +2,7 @@
 version: '3.7'
 services:
   suwayomi:
-    image: ghcr.io/suwayomi/tachidesk:preview
+    image: ghcr.io/suwayomi/suwayomi-server:preview
     environment:
       - TZ=Etc/UTC # Use TZ database name from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       # Comment these out if you do not use the flaresolverr container at the bottom of this file
