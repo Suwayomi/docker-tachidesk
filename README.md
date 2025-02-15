@@ -1,14 +1,14 @@
-# Tachidesk-docker
+# Suwayomi-Server Docker Container
 
 |                                                                                                                                                                                                                                                   Status                                                                                                                                                                                                                                                    |                                                                                                                             Stable                                                                                                                              |                                                                                                                             Preview                                                                                                                              |                                                                      Discord Support                                                                       |
 |:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| [![Build Docker Images](https://github.com/suwayomi/docker-tachidesk/actions/workflows/build_container_images.yml/badge.svg)](https://github.com/suwayomi/docker-tachidesk/actions/workflows/build_container_images.yml) [![Docker Pulls](https://img.shields.io/badge/dynamic/json?url=https://github.com/suwayomi/docker-tachidesk/raw/main/scripts/tachidesk_version.json&label=docker_pulls&query=$.total_downloads&color=blue)](https://github.com/orgs/suwayomi/packages/container/package/tachidesk) | [![Latest](https://img.shields.io/badge/dynamic/json?url=https://github.com/suwayomi/docker-tachidesk/raw/main/scripts/tachidesk_version.json&label=version&query=$.stable&color=blue)](https://github.com/orgs/suwayomi/packages/container/package/tachidesk/) | [![Preview](https://img.shields.io/badge/dynamic/json?url=https://github.com/suwayomi/docker-tachidesk/raw/main/scripts/tachidesk_version.json&label=version&query=$.preview&color=blue)](https://github.com/orgs/suwayomi/packages/container/package/tachidesk) | [![Discord](https://img.shields.io/discord/801021177333940224.svg?label=discord&labelColor=7289da&color=2c2f33&style=flat)](https://discord.gg/DDZdqZWaHA) |
+| [![Build Docker Images](https://github.com/Suwayomi/Suwayomi-Server-docker/actions/workflows/build_container_images.yml/badge.svg)](https://github.com/Suwayomi/Suwayomi-Server-docker/actions/workflows/build_container_images.yml) [![Docker Pulls](https://img.shields.io/badge/dynamic/json?url=https://github.com/Suwayomi/Suwayomi-Server-docker/raw/main/scripts/tachidesk_version.json&label=docker_pulls&query=$.total_downloads&color=blue)](https://github.com/orgs/suwayomi/packages/container/package/tachidesk) | [![Latest](https://img.shields.io/badge/dynamic/json?url=https://github.com/Suwayomi/Suwayomi-Server-docker/raw/main/scripts/tachidesk_version.json&label=version&query=$.stable&color=blue)](https://github.com/orgs/suwayomi/packages/container/package/tachidesk/) | [![Preview](https://img.shields.io/badge/dynamic/json?url=https://github.com/Suwayomi/Suwayomi-Server-docker/raw/main/scripts/tachidesk_version.json&label=version&query=$.preview&color=blue)](https://github.com/orgs/suwayomi/packages/container/package/tachidesk) | [![Discord](https://img.shields.io/discord/801021177333940224.svg?label=discord&labelColor=7289da&color=2c2f33&style=flat)](https://discord.gg/DDZdqZWaHA) |
 
 Run [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server) inside docker container as non-root user. The server will be running on http://localhost:4567 open this url in your browser.
 
-Docker Releases - https://github.com/suwayomi/docker-tachidesk/pkgs/container/tachidesk
+Docker Releases - https://github.com/Suwayomi/Suwayomi-Server-docker/pkgs/container/tachidesk
 
-Dockerfile - https://github.com/suwayomi/docker-tachidesk
+Dockerfile - https://github.com/Suwayomi/Suwayomi-Server-docker
 
 _**Suwayomi data location - /home/suwayomi/.local/share/Tachidesk**_
 
@@ -74,7 +74,7 @@ There are a number of environment variables available to configure Suwayomi:
 We do not allow configuration of the downloads folder, since Docker Volumes can handle that instead, here is an example of a docker-compose.yaml that has downloads volume configuration:
 ```yaml
   tachidesk:
-    image: ghcr.io/suwayomi/tachidesk:stable
+    image: ghcr.io/suwayomi/suwayomi-server:stable
     container_name: tachidesk
     volumes: # The order matters! Make sure the downloads is first in the volume list or it will not work!
       - /example/tachidesk/downloads:/home/suwayomi/.local/share/Tachidesk/downloads
@@ -88,19 +88,19 @@ We do not allow configuration of the downloads folder, since Docker Volumes can 
 
 ## Latest
 
-`ghcr.io/suwayomi/tachidesk:latest`
+`ghcr.io/suwayomi/suwayomi-server:latest`
 
 The latest stable release of the server. Also tagged as `:stable`.
 
 ## Preview
 
-`ghcr.io/suwayomi/tachidesk:preview`
+`ghcr.io/suwayomi/suwayomi-server:preview`
 
 The latest preview release of the server. Can be buggy!
 
 # Credit
 
-[Suwayomi-Server](https://github.com/Suwayomi/Tachidesk-Server) is licensed under `MPL v. 2.0`.
+[Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server) is licensed under `MPL v. 2.0`.
 
 # License
 
