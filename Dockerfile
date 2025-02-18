@@ -35,8 +35,8 @@ RUN apt-get update && \
 
 # Create a user to run as
 RUN userdel -r ubuntu
-RUN groupadd --gid 1000 suwayomi && \
-    useradd  --uid 1000 --gid suwayomi --no-log-init suwayomi && \
+RUN groupadd --gid ${GID:-1000} suwayomi && \
+    useradd  --uid ${UID:-1000} --gid suwayomi --no-log-init suwayomi && \
     mkdir -p /home/suwayomi/.local/share/Tachidesk
 
 WORKDIR /home/suwayomi
